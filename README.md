@@ -1,11 +1,10 @@
-# Hydrogen template: Skeleton
+# Maker SixtyFour
 
-Hydrogen is Shopify’s stack for headless commerce. Hydrogen is designed to dovetail with [Remix](https://remix.run/), Shopify’s full stack web framework. This template contains a **minimal setup** of components, queries and tooling to get started with Hydrogen.
 
-[Check out Hydrogen docs](https://shopify.dev/custom-storefronts/hydrogen)
-[Get familiar with Remix](https://remix.run/docs/en/v1)
+# About the project
+This project is a modern Shopify storefront built using the [Hydrogen framework](https://shopify.dev/docs/custom-storefronts/hydrogen). Hydrogen provides a React-based, server-rendered framework optimized for commerce, enabling fast and dynamic storefronts.
 
-## What's included
+## Techstack
 
 - Remix
 - Hydrogen
@@ -24,22 +23,47 @@ Hydrogen is Shopify’s stack for headless commerce. Hydrogen is designed to dov
 
 - Node.js version 18.0.0 or higher
 
-```bash
-npm create @shopify/hydrogen@latest
+## Project Structure
+
+```plaintext
+├── app/
+│   ├── assets/          # Images, fonts, and other static assets specific to the app
+│   ├── components/      # Reusable components
+│   ├── graphql/         # GraphQL queries, mutations, and fragments
+│   ├── lib/             # Library code and integrations (e.g., Shopify SDK, API utilities)
+│   ├── routes/          # Page routes and dynamic route handlers
+│   ├── styles/          # Global and module-specific styles
+│   └── utils/           # Utility functions and helpers
+├── public/              # Static assets served directly (e.g., robots.txt, favicon, etc.)
+├── vite.config.js       # Vite configuration for the project
+├── package.json         # Project dependencies and scripts
+└── .env                 # Environment variables
 ```
 
-## Building for production
+## Installation
 
+Install dependencies:
 ```bash
-npm run build
+npm install
 ```
-
-## Local development
+Start the development server:
 
 ```bash
 npm run dev
 ```
+The application will be available at http://localhost:3000
 
 ## Setup for using Customer Account API (`/account` section)
 
 Follow step 1 and 2 of <https://shopify.dev/docs/custom-storefronts/building-with-the-customer-account-api/hydrogen#step-1-set-up-a-public-domain-for-local-development>
+
+## Contributing
+Contributions, issues, and feature requests are welcome! Feel free to open an issue or submit a pull request.
+
+## License
+This project is licensed under the MIT License.
+
+## Resources
+Shopify Hydrogen Documentation
+Shopify Storefront API Reference
+React Documentation
