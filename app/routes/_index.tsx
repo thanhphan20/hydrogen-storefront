@@ -5,7 +5,10 @@ import {Image, Money} from '@shopify/hydrogen';
 import type {
   FeaturedCollectionFragment,
   RecommendedProductsQuery,
+  CategoryProductsQuery,
 } from 'storefrontapi.generated';
+import {Tab} from '@headlessui/react';
+import { Carousel } from '~/components/Carousel';
 
 export const meta: MetaFunction = () => {
   return [{title: 'Hydrogen | Home'}];
@@ -32,7 +35,7 @@ async function loadCriticalData({context}: LoaderFunctionArgs) {
   ]);
 
   return {
-    featuredCollection: collections.nodes[0],
+    featuredCollection: collections.nodes,
   };
 }
 
@@ -50,8 +53,16 @@ function loadDeferredData({context}: LoaderFunctionArgs) {
       return null;
     });
 
+  const categoriesWithProducts = context.storefront
+    .query(CATEGORIES_WITH_PRODUCTS_QUERY)
+    .catch((error) => {
+      console.error(error);
+      return null;
+  });
+
   return {
     recommendedProducts,
+    categoriesWithProducts
   };
 }
 
@@ -60,6 +71,7 @@ export default function Homepage() {
   return (
     <div className="home">
       <FeaturedCollection collection={data.featuredCollection} />
+      <CategoriesWithProducts categories={data.categoriesWithProducts}/>
       <RecommendedProducts products={data.recommendedProducts} />
     </div>
   );
@@ -68,22 +80,100 @@ export default function Homepage() {
 function FeaturedCollection({
   collection,
 }: {
-  collection: FeaturedCollectionFragment;
+  collection: FeaturedCollectionFragment[];
 }) {
-  if (!collection) return null;
-  const image = collection?.image;
+  if (!collection || collection.length === 0) return null;
+
   return (
-    <Link
-      className="featured-collection"
-      to={`/collections/${collection.handle}`}
-    >
-      {image && (
-        <div className="featured-collection-image">
-          <Image data={image} sizes="100vw" />
-        </div>
+    <Carousel
+      slides={collection}
+      renderSlide={(slide) => (
+        <Link
+          className="featured-collection flex flex-row items-center w-full"
+          to={`/collections/${slide.handle}`}
+          key={slide.id}
+        >
+          {slide.image && (
+            <div className="featured-collection-image flex items-center justify-center">
+              <Image data={slide.image} sizes="(min-width: 45em) 50vw, 50vw" />
+            </div>
+          )}
+          <h1>{slide.title}</h1>
+        </Link>
       )}
-      <h1>{collection.title}</h1>
-    </Link>
+    />
+  );
+}
+
+function CategoriesWithProducts({
+  categories,
+}: {
+  categories: Promise<CategoryProductsQuery | null>;
+}) {
+  return (
+    <div className="categories-with-products">
+      <h2 className="text-2xl font-semibold mb-4">Categories</h2>
+      
+      <Suspense fallback={<div>Loading categories...</div>}>
+        <Await resolve={categories}>
+          {(data) => {
+            if (!data?.collections?.nodes) {
+              return <p>No categories available.</p>;
+            }
+
+            const categories = data.collections.nodes;
+
+            return (
+              <>
+                <Tab.Group>
+                  <Tab.List className="flex gap-4 pb-2">
+                    {categories.map((category) => (
+                      <Tab
+                        key={category.id}
+                        className={({ selected }) => `rounded-full py-1 px-3 text-sm/6 font-semibold focus:outline-none hover:bg-black/5 focus:outline-1 focus:outline-black ${selected ? 'bg-black/10' : ''}`}
+                      >
+                        {category.title}
+                      </Tab>
+                    ))}
+                  </Tab.List>
+
+                  <Tab.Panels className="mt-3">
+                    {categories.map((category) => (
+                      <Tab.Panel key={category.id} className="rounded-xl bg-white/5 p-3">
+                        <div className="products-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
+                          {category.products.nodes.length > 0 ? (
+                            category.products.nodes.map((product) => (
+                              <Link
+                                key={product.id}
+                                className="recommended-product bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow"
+                                to={`/products/${product.handle}`}
+                              >
+                                <Image
+                                  data={product.images.nodes[0]}
+                                  aspectRatio="1/1"
+                                  sizes="(min-width: 45em) 20vw, 50vw"
+                                  className="rounded-md mb-4"
+                                />
+                                <h4 className="font-semibold text-lg">{product.title}</h4>
+                                <small className="text-gray-500">
+                                  <Money data={product.priceRange.minVariantPrice} />
+                                </small>
+                              </Link>
+                            ))
+                          ) : (
+                            <p>No products available for this category.</p>
+                          )}
+                        </div>
+                      </Tab.Panel>
+                    ))}
+                  </Tab.Panels>
+                </Tab.Group>
+              </>
+            );
+          }}
+        </Await>
+      </Suspense>
+    </div>
   );
 }
 
@@ -142,9 +232,47 @@ const FEATURED_COLLECTION_QUERY = `#graphql
   }
   query FeaturedCollection($country: CountryCode, $language: LanguageCode)
     @inContext(country: $country, language: $language) {
-    collections(first: 1, sortKey: UPDATED_AT, reverse: true) {
+    collections(first: 3, sortKey: UPDATED_AT, reverse: true) {
       nodes {
         ...FeaturedCollection
+      }
+    }
+  }
+` as const;
+
+const CATEGORIES_WITH_PRODUCTS_QUERY = `#graphql
+  fragment Product on Product {
+    id
+    title
+    handle
+    priceRange {
+      minVariantPrice {
+        amount
+        currencyCode
+      }
+    }
+    images(first: 1) {
+      nodes {
+        id
+        url
+        altText
+        width
+        height
+      }
+    }
+  }
+  query CategoriesWithProducts($country: CountryCode, $language: LanguageCode)
+    @inContext(country: $country, language: $language) {
+    collections(first: 4) {
+      nodes {
+        id
+        title
+        handle
+        products(first: 3) {
+          nodes {
+            ...Product
+          }
+        }
       }
     }
   }

@@ -366,6 +366,34 @@ export type RecommendedProductsQuery = {
   };
 };
 
+export type CategoryProductsQuery = {
+  collections: {
+    nodes: Array<Pick<StorefrontAPI.Collection, 'id' |'title' | 'handle'> & {
+      products: {
+        nodes:  Array<
+        Pick<StorefrontAPI.Product, 'id' | 'title' | 'handle'> & {
+          priceRange: {
+            minVariantPrice: Pick<
+              StorefrontAPI.MoneyV2,
+              'amount' | 'currencyCode'
+            >;
+          };
+          images: {
+            nodes: Array<
+              Pick<
+                StorefrontAPI.Image,
+                'id' | 'url' | 'altText' | 'width' | 'height'
+              >
+            >;
+          };
+        }
+      >;
+      }
+    }>
+  };
+};
+
+
 export type ArticleQueryVariables = StorefrontAPI.Exact<{
   articleHandle: StorefrontAPI.Scalars['String']['input'];
   blogHandle: StorefrontAPI.Scalars['String']['input'];

@@ -212,9 +212,9 @@ button.reset:hover:not(:has(> *)) {
 }
 
 .footer-menu {
-  align-items: center;
+  align-items: start;
   display: flex;
-  grid-gap: 1rem;
+  gap: 1rem;
   padding: 1rem;
 }
 
@@ -335,7 +335,7 @@ button.reset:hover:not(:has(> *)) {
 * --------------------------------------------------
 */
 .featured-collection {
-  display: block;
+  display: flex;
   margin-bottom: 2rem;
   position: relative;
 }
@@ -348,9 +348,10 @@ button.reset:hover:not(:has(> *)) {
 }
 
 .featured-collection img {
-  height: auto;
-  max-height: 100%;
+  height: auto !important;
+  max-height: 80%;
   object-fit: cover;
+  width: auto !important;
 }
 
 .recommended-products-grid {
