@@ -5,10 +5,18 @@ import {
   Image,
   Money,
   Analytics,
+  flattenConnection
 } from '@shopify/hydrogen';
+import type {
+  Filter,
+  ProductCollectionSortKeys,
+  ProductFilter,
+} from '@shopify/hydrogen/storefront-api-types';
 import type {ProductItemFragment} from 'storefrontapi.generated';
 import {useVariantUrl} from '~/lib/variants';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
+import {SortFilter, type SortParam, FILTER_URL_PREFIX} from '~/components/Filter';
+import { parseAsCurrency } from '~/lib/parse';
 
 export const meta: MetaFunction<typeof loader> = ({data}) => {
   return [{title: `Hydrogen | ${data?.collection.title ?? ''} Collection`}];
@@ -34,6 +42,7 @@ async function loadCriticalData({
   request,
 }: LoaderFunctionArgs) {
   const {handle} = params;
+  const locale = context.storefront.i18n;
   const {storefront} = context;
   const paginationVariables = getPaginationVariables(request, {
     pageBy: 8,
@@ -43,10 +52,34 @@ async function loadCriticalData({
     throw redirect('/collections');
   }
 
-  const [{collection}] = await Promise.all([
+  const searchParams = new URL(request.url).searchParams;
+
+  const {sortKey, reverse} = getSortValuesFromParam(searchParams.get('sort') as SortParam)
+
+  const filters = [...searchParams.entries()].reduce(
+    (filters, [key, value]) => {
+      if (key.startsWith(FILTER_URL_PREFIX)) {
+        const filterKey = key.substring(FILTER_URL_PREFIX.length);
+        filters.push({
+          [filterKey]: JSON.parse(value),
+        });
+      }
+      return filters;
+    },
+    [] as ProductFilter[],
+  );
+
+  const [{collection, collections}] = await Promise.all([
     storefront.query(COLLECTION_QUERY, {
-      variables: {handle, ...paginationVariables},
-      // Add other queries here, so that they are loaded in parallel
+      variables: {
+        ...paginationVariables,
+        handle, 
+        filters,
+        sortKey, 
+        reverse,
+        country: context.storefront.i18n.country,
+        language: context.storefront.i18n.language,
+      },
     }),
   ]);
 
@@ -56,8 +89,53 @@ async function loadCriticalData({
     });
   }
 
+  const allFilterValues = collection.products.filters.flatMap(
+    (filter: any[]) => filter.values,
+  );
+
+  const appliedFilters = filters
+    .map((filter) => {
+      const foundValue = allFilterValues.find((value: any) => {
+        const valueInput = JSON.parse(value.input as string) as ProductFilter;
+        if (valueInput.price && filter.price) {
+          return true;
+        }
+        return (
+          JSON.stringify(valueInput) === JSON.stringify(filter)
+        );
+      });
+      if (!foundValue) {
+        // eslint-disable-next-line no-console
+        console.error('Could not find filter value for filter', filter);
+        return null;
+      }
+
+      if (foundValue.id === 'filter.v.price') {
+        // Special case for price, show the min and max values as the label.
+        const input = JSON.parse(foundValue.input as string) as ProductFilter;
+        const min = parseAsCurrency(input.price?.min ?? 0, locale);
+        const max = input.price?.max
+          ? parseAsCurrency(input.price.max, locale)
+          : '';
+        const label = min && max ? `${min} - ${max}` : 'Price';
+
+        return {
+          filter,
+          label,
+        };
+      }
+      return {
+        filter,
+        label: foundValue.label as string,
+      };
+    })
+    .filter((filter): filter is NonNullable<typeof filter> => filter !== null);
+
+
   return {
     collection,
+    appliedFilters,
+    collections: flattenConnection(collections),
   };
 }
 
@@ -71,24 +149,43 @@ function loadDeferredData({context}: LoaderFunctionArgs) {
 }
 
 export default function Collection() {
-  const {collection} = useLoaderData<typeof loader>();
+  const {collection, appliedFilters, collections} = useLoaderData<typeof loader>();
+  console.log(collection)
 
   return (
     <div className="collection">
-      <h1>{collection.title}</h1>
-      <p className="collection-description">{collection.description}</p>
-      <PaginatedResourceSection
-        connection={collection.products}
-        resourcesClassName="products-grid"
-      >
-        {({node: product, index}) => (
-          <ProductItem
-            key={product.id}
-            product={product}
-            loading={index < 8 ? 'eager' : undefined}
+      <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-2">
+          <h1>{collection.title}</h1>
+          <p className="collection-description">{collection.description}</p>
+        </div>
+        <div className="flex items-center justify-center">
+          <Image 
+            data={collection.image} 
+            alt={collection.image.altText || "collection-img"}
+            sizes="(min-width: 45em) 400px, 100vw"
+            aspectRatio="1/1"
           />
-        )}
-      </PaginatedResourceSection>
+        </div>
+      </div>
+      <SortFilter 
+        filters={collection.products.filters as Filter[]}
+        appliedFilters={appliedFilters}
+        collections={collections as Array<{handle: string; title: string}>}
+      >
+        <PaginatedResourceSection
+          connection={collection.products}
+          resourcesClassName="products-grid"
+        >
+          {({node: product, index}: {node: ProductItemFragment, index: number}) => (
+            <ProductItem
+              key={product.id}
+              product={product}
+              loading={index < 8 ? 'eager' : undefined}
+            />
+          )}
+        </PaginatedResourceSection>
+      </SortFilter>
       <Analytics.CollectionView
         data={{
           collection: {
@@ -109,6 +206,7 @@ function ProductItem({
   loading?: 'eager' | 'lazy';
 }) {
   const variantUrl = useVariantUrl(product.handle);
+  console.log(product)
   return (
     <Link
       className="product-item"
@@ -133,6 +231,44 @@ function ProductItem({
   );
 }
 
+function getSortValuesFromParam(sortParam: SortParam | null): {
+  sortKey: ProductCollectionSortKeys;
+  reverse: boolean;
+} {
+  switch (sortParam) {
+    case 'price-high-low':
+      return {
+        sortKey: 'PRICE',
+        reverse: true,
+      };
+    case 'price-low-high':
+      return {
+        sortKey: 'PRICE',
+        reverse: false,
+      };
+    case 'best-selling':
+      return {
+        sortKey: 'BEST_SELLING',
+        reverse: false,
+      };
+    case 'newest':
+      return {
+        sortKey: 'CREATED',
+        reverse: true,
+      };
+    case 'featured':
+      return {
+        sortKey: 'MANUAL',
+        reverse: false,
+      };
+    default:
+      return {
+        sortKey: 'RELEVANCE',
+        reverse: false,
+      };
+  }
+}
+
 const PRODUCT_ITEM_FRAGMENT = `#graphql
   fragment MoneyProductItem on MoneyV2 {
     amount
@@ -142,6 +278,8 @@ const PRODUCT_ITEM_FRAGMENT = `#graphql
     id
     handle
     title
+    publishedAt
+    vendor
     featuredImage {
       id
       altText
@@ -167,6 +305,9 @@ const COLLECTION_QUERY = `#graphql
     $handle: String!
     $country: CountryCode
     $language: LanguageCode
+    $filters: [ProductFilter!]
+    $sortKey: ProductCollectionSortKeys!
+    $reverse: Boolean
     $first: Int
     $last: Int
     $startCursor: String
@@ -177,12 +318,37 @@ const COLLECTION_QUERY = `#graphql
       handle
       title
       description
+      seo {
+        description
+        title
+      }
+      image {
+        id
+        url
+        width
+        height
+        altText
+      }
       products(
         first: $first,
         last: $last,
         before: $startCursor,
         after: $endCursor
+        filters: $filters,
+        sortKey: $sortKey,
+        reverse: $reverse
       ) {
+        filters {
+          id
+          label
+          type
+          values {
+            id
+            label
+            count
+            input
+          }
+        }
         nodes {
           ...ProductItem
         }
@@ -191,6 +357,14 @@ const COLLECTION_QUERY = `#graphql
           hasNextPage
           endCursor
           startCursor
+        }
+      }
+    }
+    collections(first: 20) {
+      edges {
+        node {
+          title
+          handle
         }
       }
     }
