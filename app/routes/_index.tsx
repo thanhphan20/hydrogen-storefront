@@ -8,7 +8,9 @@ import type {
   CategoryProductsQuery,
 } from 'storefrontapi.generated';
 import {Tab} from '@headlessui/react';
-import { Carousel } from '~/components/Carousel';
+import {Carousel} from '~/components/Carousel';
+import {MEDIA_FRAGMENT} from '~/graphql/fragment-query/media-query';
+import {PRODUCT_FRAGMENT} from '~/graphql/fragment-query/product-query';
 
 export const meta: MetaFunction = () => {
   return [{title: 'Hydrogen | Home'}];
@@ -29,13 +31,17 @@ export async function loader(args: LoaderFunctionArgs) {
  * needed to render the page. If it's unavailable, the whole page should 400 or 500 error.
  */
 async function loadCriticalData({context}: LoaderFunctionArgs) {
-  const [{collections}] = await Promise.all([
+  const [{collections}, {hero}] = await Promise.all([
     context.storefront.query(FEATURED_COLLECTION_QUERY),
+    context.storefront.query(HERO_SECTION_QUERY, {
+      variables: {handle: 'freestyle'},
+    })
     // Add other queries here, so that they are loaded in parallel
   ]);
 
   return {
     featuredCollection: collections.nodes,
+    hero
   };
 }
 
@@ -68,6 +74,7 @@ function loadDeferredData({context}: LoaderFunctionArgs) {
 
 export default function Homepage() {
   const data = useLoaderData<typeof loader>();
+  console.log(data)
   return (
     <div className="home">
       <FeaturedCollection collection={data.featuredCollection} />
@@ -240,27 +247,19 @@ const FEATURED_COLLECTION_QUERY = `#graphql
   }
 ` as const;
 
-const CATEGORIES_WITH_PRODUCTS_QUERY = `#graphql
-  fragment Product on Product {
-    id
-    title
-    handle
-    priceRange {
-      minVariantPrice {
-        amount
-        currencyCode
-      }
-    }
-    images(first: 1) {
+const RECOMMENDED_PRODUCTS_QUERY = `#graphql
+  query RecommendedProducts ($country: CountryCode, $language: LanguageCode)
+    @inContext(country: $country, language: $language) {
+    products(first: 4, sortKey: UPDATED_AT, reverse: true) {
       nodes {
-        id
-        url
-        altText
-        width
-        height
+        ...Product
       }
     }
   }
+  ${PRODUCT_FRAGMENT}
+` as const;
+
+const CATEGORIES_WITH_PRODUCTS_QUERY = `#graphql
   query CategoriesWithProducts($country: CountryCode, $language: LanguageCode)
     @inContext(country: $country, language: $language) {
     collections(first: 4) {
@@ -276,35 +275,49 @@ const CATEGORIES_WITH_PRODUCTS_QUERY = `#graphql
       }
     }
   }
+  ${PRODUCT_FRAGMENT}
 ` as const;
 
-const RECOMMENDED_PRODUCTS_QUERY = `#graphql
-  fragment RecommendedProduct on Product {
+const COLLECTION_CONTENT_FRAGMENT = `#graphql
+  fragment CollectionContent on Collection {
     id
-    title
     handle
-    priceRange {
-      minVariantPrice {
-        amount
-        currencyCode
+    title
+    descriptionHtml
+    heading: metafield(namespace: "hero", key: "title") {
+      value
+    }
+    byline: metafield(namespace: "hero", key: "byline") {
+      value
+    }
+    cta: metafield(namespace: "hero", key: "cta") {
+      value
+    }
+    spread: metafield(namespace: "hero", key: "spread") {
+      reference {
+        ...Media
       }
     }
-    images(first: 1) {
+    spreadSecondary: metafield(namespace: "hero", key: "spread_secondary") {
+      reference {
+        ...Media
+      }
+    }
+    products(first: 3){
       nodes {
-        id
-        url
-        altText
-        width
-        height
+        ...Product
       }
     }
   }
-  query RecommendedProducts ($country: CountryCode, $language: LanguageCode)
-    @inContext(country: $country, language: $language) {
-    products(first: 4, sortKey: UPDATED_AT, reverse: true) {
-      nodes {
-        ...RecommendedProduct
-      }
+  ${MEDIA_FRAGMENT}, ${PRODUCT_FRAGMENT}
+` as const;
+
+const HERO_SECTION_QUERY = `#graphql
+  query heroCollectionContent($handle: String, $country: CountryCode, $language: LanguageCode)
+  @inContext(country: $country, language: $language) {
+    hero: collection(handle: $handle) {
+      ...CollectionContent
     }
   }
+  ${COLLECTION_CONTENT_FRAGMENT}
 ` as const;
