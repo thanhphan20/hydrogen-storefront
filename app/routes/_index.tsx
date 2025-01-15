@@ -9,6 +9,7 @@ import type {
 } from 'storefrontapi.generated';
 import {Tab} from '@headlessui/react';
 import {Carousel} from '~/components/Carousel';
+import {HotSpot} from '~/components/Hotspot';
 import {MEDIA_FRAGMENT} from '~/graphql/fragment-query/media-query';
 import {PRODUCT_FRAGMENT} from '~/graphql/fragment-query/product-query';
 
@@ -74,11 +75,34 @@ function loadDeferredData({context}: LoaderFunctionArgs) {
 
 export default function Homepage() {
   const data = useLoaderData<typeof loader>();
-  console.log(data)
+
+  const mappedData = {
+    banner: {
+      image: {
+        url: data.hero.spread.reference.image.url,
+        altText: data.hero.spread.reference.alt
+      },
+      title: data.hero.title,
+      byline: data.hero.byline.value
+    },
+    hotspots: data.hero.products.nodes.map((product: any, index: number) => ({
+      id: product.id,
+      title: product.title,
+      imageUrl: product.images.nodes[0].url,
+      price: `${product.priceRange.minVariantPrice.amount} ${product.priceRange.minVariantPrice.currencyCode}`,
+      descriptionHtml: data.hero.descriptionHtml,
+      position: {
+        x: index === 0 ? 30 : index === 1 ? 60 : 40,
+        y: index === 0 ? 50 : index === 1 ? 30 : 60,
+      }
+    }))
+  };
+
   return (
     <div className="home">
       <FeaturedCollection collection={data.featuredCollection} />
       <CategoriesWithProducts categories={data.categoriesWithProducts}/>
+      <HotSpot banner={mappedData.banner} hotspots={mappedData.hotspots}/>
       <RecommendedProducts products={data.recommendedProducts} />
     </div>
   );
