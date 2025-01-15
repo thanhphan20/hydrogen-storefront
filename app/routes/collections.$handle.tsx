@@ -15,8 +15,10 @@ import type {
 import type {ProductItemFragment} from 'storefrontapi.generated';
 import {useVariantUrl} from '~/lib/variants';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
-import {SortFilter, type SortParam, FILTER_URL_PREFIX} from '~/components/Filter';
-import { parseAsCurrency } from '~/lib/parse';
+import {SortFilter} from '~/components/Filter';
+import {parseAsCurrency} from '~/ultils/parse';
+import {FILTER_URL_PREFIX} from '~/constants/url';
+import {SortParam} from '~/type/params';
 
 export const meta: MetaFunction<typeof loader> = ({data}) => {
   return [{title: `Hydrogen | ${data?.collection.title ?? ''} Collection`}];
@@ -150,8 +152,6 @@ function loadDeferredData({context}: LoaderFunctionArgs) {
 
 export default function Collection() {
   const {collection, appliedFilters, collections} = useLoaderData<typeof loader>();
-  console.log(collection)
-
   return (
     <div className="collection">
       <div className="flex items-center justify-between">
@@ -206,7 +206,6 @@ function ProductItem({
   loading?: 'eager' | 'lazy';
 }) {
   const variantUrl = useVariantUrl(product.handle);
-  console.log(product)
   return (
     <Link
       className="product-item"

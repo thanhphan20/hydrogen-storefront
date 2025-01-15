@@ -1,4 +1,4 @@
-import { I18nLocale } from "./type";
+import { I18nLocale } from "~/type/locale";
 
 export function parseAsCurrency(value: number, locale: I18nLocale) {
     return new Intl.NumberFormat(locale.language + '-' + locale.country, {
