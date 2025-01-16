@@ -35,6 +35,7 @@ export async function action({request, context}: ActionFunctionArgs) {
 
   const form = await request.formData();
 
+  try {
     const companyInput: Record<string, any> = {};
     const validInputKeys = ['name', 'externalId', 'mainContactEmail', 'mainContactFirstName', 'mainContactLastName'] as const;
 
@@ -69,13 +70,30 @@ export async function action({request, context}: ActionFunctionArgs) {
     );
 
     if (errors) {
-      console.log(errors);
+      throw new Error(errors.message);
+    }
+
+    const userErrors = data?.companyCreate?.userErrors;
+    if (userErrors?.length) {
+      throw new Error(userErrors[0].message);
+    }
+
+    if (!data?.companyCreate?.company) {
+      throw new Error('Company creation failed.');
     }
 
     return json({
-      error: errors,
+      error: null,
       company: data?.companyCreate?.company,
     });
+  } catch (error: any) {
+    return json(
+      {error: error.message, company: null},
+      {
+        status: 400,
+      },
+    );
+  }
 }
 
 export default function AccountRegistration() {
