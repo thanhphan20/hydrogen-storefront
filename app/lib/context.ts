@@ -1,4 +1,5 @@
 import {createHydrogenContext} from '@shopify/hydrogen';
+import {createAdminApiClient} from '@shopify/admin-api-client';
 import {AppSession} from '~/lib/session';
 import {CART_QUERY_FRAGMENT} from '~/graphql/fragment-query/cart-query';
 
@@ -38,6 +39,11 @@ export async function createAppLoadContext(
 
   return {
     ...hydrogenContext,
+    admin: createAdminApiClient({
+      storeDomain: `https://${env.PUBLIC_STORE_DOMAIN}`,
+      accessToken: env.PRIVATE_ADMIN_ACCESS_TOKEN,
+      apiVersion: env.PRIVATE_ADMIN_API_VERSION || '2024-10',
+    }),
     // declare additional Remix loader context
   };
 }

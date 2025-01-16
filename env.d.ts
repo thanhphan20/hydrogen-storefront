@@ -19,6 +19,10 @@ declare global {
   const process: {env: {NODE_ENV: 'production' | 'development'}};
 
   interface Env extends HydrogenEnv {
+    PRIVATE_ADMIN_ACCESS_TOKEN,
+    PRIVATE_ADMIN_API_KEY,
+    PRIVATE_ADMIN_API_SECRET_KEY,
+    PRIVATE_ADMIN_API_VERSION
     // declare additional Env parameter use in the fetch handler and Remix loader context here
   }
 }
