@@ -74,6 +74,10 @@ function AccountMenu() {
         &nbsp; Addresses &nbsp;
       </NavLink>
       &nbsp;|&nbsp;
+      <NavLink to="/account/registration" style={isActiveStyle}>
+        &nbsp; Registration &nbsp;
+      </NavLink>
+      &nbsp;|&nbsp;
       <Logout />
     </nav>
   );
