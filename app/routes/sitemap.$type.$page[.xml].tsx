@@ -18,6 +18,7 @@ export async function loader({
   });
 
   response.headers.set('Cache-Control', `max-age=${60 * 60 * 24}`);
+  response.headers.set('Vary', 'Accept-Encoding, Accept-Language');
 
   return response;
 }

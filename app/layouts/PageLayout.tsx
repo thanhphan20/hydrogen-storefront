@@ -1,5 +1,5 @@
 import {Await, Link} from '@remix-run/react';
-import {Suspense, useId} from 'react';
+import {Suspense, useId, useState, useEffect} from 'react';
 import type {
   CartApiQueryFragment,
   FooterQuery,
@@ -14,6 +14,9 @@ import {
   SearchFormPredictive,
 } from '~/components/SearchFormPredictive';
 import {SearchResultsPredictive} from '~/components/SearchResultsPredictive';
+import {Modal} from "~/components/Modal";
+import {RegionSelector} from "~/components/RegionSelector"
+import {getRegion} from '~/lib/cookie';
 
 interface PageLayoutProps {
   cart: Promise<CartApiQueryFragment | null>;
@@ -32,6 +35,15 @@ export function PageLayout({
   isLoggedIn,
   publicStoreDomain,
 }: PageLayoutProps) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const selectedRegion = getRegion();
+  
+  useEffect(() => {
+    if (!selectedRegion || Object.keys(selectedRegion).length === 0) {
+      setIsModalOpen(true);
+    }
+  }, [selectedRegion]);
+
   return (
     <Aside.Provider>
       {header && (
@@ -43,6 +55,9 @@ export function PageLayout({
         />
       )}
       <main>{children}</main>
+      <Modal heading="Select your region" open={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <RegionSelector/>
+      </Modal>
       <Footer
         footer={footer}
         header={header}

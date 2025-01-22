@@ -1,9 +1,11 @@
 import {defer, type LoaderFunctionArgs} from '@shopify/remix-oxygen';
-import {useLoaderData, Link, type MetaFunction} from '@remix-run/react';
+import {useLoaderData, type MetaFunction} from '@remix-run/react';
 import {getPaginationVariables, Image, Money} from '@shopify/hydrogen';
 import type {ProductItemFragment} from 'storefrontapi.generated';
 import {useVariantUrl} from '~/lib/variants';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
+import {Link} from '~/components/Link';
+import {isRegionNA} from '~/ultils/region';
 
 export const meta: MetaFunction<typeof loader> = () => {
   return [{title: `Hydrogen | Products`}];
@@ -77,6 +79,8 @@ function ProductItem({
   loading?: 'eager' | 'lazy';
 }) {
   const variantUrl = useVariantUrl(product.handle);
+  const isNA = isRegionNA();
+
   return (
     <Link
       className="product-item"
@@ -95,7 +99,10 @@ function ProductItem({
       )}
       <h4>{product.title}</h4>
       <small>
-        <Money data={product.priceRange.minVariantPrice} />
+        {isNA ? (
+          <Money data={product.priceRange.minVariantPrice} />
+        ) :
+        null }
       </small>
     </Link>
   );

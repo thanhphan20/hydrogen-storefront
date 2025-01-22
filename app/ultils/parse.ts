@@ -1,6 +1,6 @@
-import { I18nLocale } from "~/type/locale";
+import {Locale} from "~/type/locale";
 
-export function parseAsCurrency(value: number, locale: I18nLocale) {
+export function parseAsCurrency(value: number, locale: Locale) {
     return new Intl.NumberFormat(locale.language + '-' + locale.country, {
       style: 'currency',
       currency: locale.currency || "USD",

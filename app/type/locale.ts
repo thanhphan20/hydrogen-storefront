@@ -12,6 +12,15 @@ export type Locale = {
 };
 
 export type I18nLocale = Locale & {
-  pathPrefix?: string;
+  pathPrefix: string;
 };
-  
+
+export type Region = {
+  label: string;
+  pathPrefix: string;
+  region: string;
+}
+
+export type Localizations = Record<string, Locale>;
+
+export type Regions = Record<string, Region>;

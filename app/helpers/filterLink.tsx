@@ -4,7 +4,7 @@ import {useLocation} from '@remix-run/react';
 import { FILTER_URL_PREFIX } from "~/constants/url";
 import { AppliedFilter, SortParam } from "~/type/params";
   
-  export function getAppliedFilterLink(
+export function getAppliedFilterLink(
   filter: AppliedFilter,
   params: URLSearchParams,
   location: Location,
@@ -37,25 +37,25 @@ export function getFilterLink(
 }
 
 export function filterInputToParams(
-    rawInput: string | ProductFilter,
-    params: URLSearchParams,
-  ) {
-    const input =
-      typeof rawInput === 'string'
-        ? (JSON.parse(rawInput) as ProductFilter)
-        : rawInput;
-  
-    Object.entries(input).forEach(([key, value]) => {
-      if (params.has(`${FILTER_URL_PREFIX}${key}`, JSON.stringify(value))) {
-        return;
-      }
-      if (key === 'price') {
-        // For price, we want to overwrite
-        params.set(`${FILTER_URL_PREFIX}${key}`, JSON.stringify(value));
-      } else {
-        params.append(`${FILTER_URL_PREFIX}${key}`, JSON.stringify(value));
-      }
-    });
-  
-    return params;
-  }
+  rawInput: string | ProductFilter,
+  params: URLSearchParams,
+) {
+  const input =
+    typeof rawInput === 'string'
+      ? (JSON.parse(rawInput) as ProductFilter)
+      : rawInput;
+
+  Object.entries(input).forEach(([key, value]) => {
+    if (params.has(`${FILTER_URL_PREFIX}${key}`, JSON.stringify(value))) {
+      return;
+    }
+    if (key === 'price') {
+      // For price, we want to overwrite
+      params.set(`${FILTER_URL_PREFIX}${key}`, JSON.stringify(value));
+    } else {
+      params.append(`${FILTER_URL_PREFIX}${key}`, JSON.stringify(value));
+    }
+  });
+
+  return params;
+}

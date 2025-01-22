@@ -1,6 +1,6 @@
-import {NavLink} from '@remix-run/react';
-import { Drawer } from "~/components/Drawer";
-import { HeaderProps } from '~/components/Header';
+import {Link} from "~/components/Link";
+import {Drawer} from "~/components/Drawer";
+import {HeaderProps} from '~/components/Header';
 
 export function MenuDrawer({
   isOpen,
@@ -31,17 +31,15 @@ export function MenuDrawer({
                 ? new URL(item.url).pathname
                 : item.url;
             return (
-              <NavLink
+              <Link
                 className="header-menu-item"
-                end
                 key={item.id}
                 onClick={onClose}
                 prefetch="intent"
-                style={activeLinkStyle}
                 to={url}
               >
                 {item.title}
-              </NavLink>
+              </Link>
             );
           })}
         </nav>
@@ -91,17 +89,3 @@ const FALLBACK_HEADER_MENU = {
       },
     ],
   };
-
-function activeLinkStyle({
-isActive,
-isPending,
-}: {
-isActive: boolean;
-isPending: boolean;
-}) {
-return {
-    fontWeight: isActive ? 'bold' : undefined,
-    color: isPending ? 'grey' : 'black',
-};
-}
-  

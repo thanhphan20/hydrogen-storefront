@@ -55,7 +55,7 @@ export function Drawer ({
                 leaveFrom="translate-x-0"
                 leaveTo={offScreen[openFrom]}
               >
-                <Dialog.Panel className={`${size !== "full" && `max-w-${size}`} w-screen p-12 text-left align-middle transition-all transform shadow-xl h-screen-dynamic bg-white`}>
+                <Dialog.Panel className={`${size !== "full" ? `max-w-${size}` : `max-w-full`} w-screen p-12 text-left align-middle transition-all transform shadow-xl h-screen-dynamic bg-white`}>
                   <header
                     className={`sticky top-0 flex items-center h-nav ${
                       heading ? 'justify-between' : 'justify-end'

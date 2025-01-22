@@ -1,5 +1,5 @@
 import {Suspense, useState} from 'react';
-import {Await, NavLink, useAsyncValue} from '@remix-run/react';
+import {Await, useAsyncValue} from '@remix-run/react';
 import {useOptimisticCart} from '@shopify/hydrogen';
 import type {HeaderQuery, CartApiQueryFragment} from 'storefrontapi.generated';
 import { HiMiniBars3, HiMagnifyingGlass } from "react-icons/hi2";
@@ -7,6 +7,7 @@ import { FaShoppingCart } from "react-icons/fa";
 import { MenuDrawer } from '~/components/MenuDrawer';
 import { CartDrawer } from '~/components/CartDrawer';
 import { SearchDrawer } from '~/components/SearchDrawer';
+import {Link} from '~/components/Link';
 
 export interface HeaderProps {
   header: HeaderQuery;
@@ -39,9 +40,9 @@ export function Header({
         primaryDomainUrl={header.shop.primaryDomain.url}
         publicStoreDomain={publicStoreDomain}
       />
-      <NavLink prefetch="intent" to="/" end>
+      <Link prefetch="intent" to="/">
         <strong>{shop.name}</strong>
-      </NavLink>
+      </Link>
       <HeaderCtas isLoggedIn={isLoggedIn} cart={cart} openCart={() => setIsCartOpen(true)} openSearch={() => setIsSearchOpen(true)}/>
     </header>
   );
@@ -60,13 +61,13 @@ function HeaderCtas({
 }) {
   return (
     <nav className="flex items-center gap-2" role="navigation">
-      <NavLink prefetch="intent" to="/account">
+      <Link prefetch="intent" to="/account">
         <Suspense fallback="Sign in">
           <Await resolve={isLoggedIn} errorElement="Sign in">
             {(isLoggedIn) => (isLoggedIn ? 'Account' : 'Sign in')}
           </Await>
         </Suspense>
-      </NavLink>
+      </Link>
       <SearchToggle openSearch={openSearch} />
       <CartToggle cart={cart} openCart={openCart}/>
     </nav>

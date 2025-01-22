@@ -40,4 +40,10 @@ export default defineConfig({
       include: [],
     },
   },
+  optimizeDeps: {
+    include: [
+      '@headlessui/react',
+      'react-icons/hi2',
+    ],
+  },
 });

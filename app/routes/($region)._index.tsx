@@ -1,5 +1,5 @@
 import {defer, type LoaderFunctionArgs} from '@shopify/remix-oxygen';
-import {Await, useLoaderData, Link, type MetaFunction} from '@remix-run/react';
+import {Await, useLoaderData, type MetaFunction} from '@remix-run/react';
 import {Suspense} from 'react';
 import {Image, Money} from '@shopify/hydrogen';
 import type {
@@ -10,6 +10,7 @@ import type {
 import {Tab} from '@headlessui/react';
 import {Carousel} from '~/components/Carousel';
 import {HotSpot} from '~/components/Hotspot';
+import {Link} from '~/components/Link';
 import {MEDIA_FRAGMENT} from '~/graphql/fragment-query/media-query';
 import {PRODUCT_FRAGMENT} from '~/graphql/fragment-query/product-query';
 
@@ -32,17 +33,17 @@ export async function loader(args: LoaderFunctionArgs) {
  * needed to render the page. If it's unavailable, the whole page should 400 or 500 error.
  */
 async function loadCriticalData({context}: LoaderFunctionArgs) {
-  const [{collections}, {hero}] = await Promise.all([
+  const [{collections}] = await Promise.all([
     context.storefront.query(FEATURED_COLLECTION_QUERY),
-    context.storefront.query(HERO_SECTION_QUERY, {
-      variables: {handle: 'freestyle'},
-    })
+    // context.storefront.query(HERO_SECTION_QUERY, {
+    //   variables: {handle: 'freestyle'},
+    // })
     // Add other queries here, so that they are loaded in parallel
   ]);
 
   return {
     featuredCollection: collections.nodes,
-    hero
+    // hero
   };
 }
 
@@ -76,33 +77,33 @@ function loadDeferredData({context}: LoaderFunctionArgs) {
 export default function Homepage() {
   const data = useLoaderData<typeof loader>();
 
-  const mappedData = {
-    banner: {
-      image: {
-        url: data.hero.spread.reference.image.url,
-        altText: data.hero.spread.reference.alt
-      },
-      title: data.hero.title,
-      byline: data.hero.byline.value
-    },
-    hotspots: data.hero.products.nodes.map((product: any, index: number) => ({
-      id: product.id,
-      title: product.title,
-      imageUrl: product.images.nodes[0].url,
-      price: `${product.priceRange.minVariantPrice.amount} ${product.priceRange.minVariantPrice.currencyCode}`,
-      descriptionHtml: data.hero.descriptionHtml,
-      position: {
-        x: index === 0 ? 30 : index === 1 ? 60 : 40,
-        y: index === 0 ? 50 : index === 1 ? 30 : 60,
-      }
-    }))
-  };
+  // const mappedData = {
+  //   banner: {
+  //     image: {
+  //       url: data.hero.spread.reference.image.url,
+  //       altText: data.hero.spread.reference.alt
+  //     },
+  //     title: data.hero.title,
+  //     byline: data.hero.byline.value
+  //   },
+  //   hotspots: data.hero.products.nodes.map((product: any, index: number) => ({
+  //     id: product.id,
+  //     title: product.title,
+  //     imageUrl: product.images.nodes[0].url,
+  //     price: `${product.priceRange.minVariantPrice.amount} ${product.priceRange.minVariantPrice.currencyCode}`,
+  //     descriptionHtml: data.hero.descriptionHtml,
+  //     position: {
+  //       x: index === 0 ? 30 : index === 1 ? 60 : 40,
+  //       y: index === 0 ? 50 : index === 1 ? 30 : 60,
+  //     }
+  //   }))
+  // };
 
   return (
     <div className="home">
       <FeaturedCollection collection={data.featuredCollection} />
       <CategoriesWithProducts categories={data.categoriesWithProducts}/>
-      <HotSpot banner={mappedData.banner} hotspots={mappedData.hotspots}/>
+      {/* <HotSpot banner={mappedData.banner} hotspots={mappedData.hotspots}/> */}
       <RecommendedProducts products={data.recommendedProducts} />
     </div>
   );
