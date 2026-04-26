@@ -1,22 +1,14 @@
 import type {IGraphQLConfig} from 'graphql-config';
 import {getSchema} from '@shopify/hydrogen-codegen';
-import {ApiType, shopifyApiTypes} from '@shopify/api-codegen-preset';
 
 /**
  * GraphQL Config
  * @see https://the-guild.dev/graphql/config/docs/user/usage
  * @type {IGraphQLConfig}
  */
-export default {
+const graphqlConfig: IGraphQLConfig = {
   projects: {
-    ...shopifyApiTypes({
-      apiType: ApiType.Admin,
-      apiVersion: '2024-10',
-      documents: ['./app/graphql/admin/*.{js,ts,jsx,tsx}'],
-      outputDir: './types',
-    }),
-
-    storefront: {
+    default: {
       schema: getSchema('storefront'),
       documents: [
         './*.{ts,tsx,js,jsx}',
@@ -32,4 +24,6 @@ export default {
 
     // Add your own GraphQL projects here for CMS, Shopify Admin API, etc.
   },
-} as IGraphQLConfig;
+};
+
+export default graphqlConfig;
