@@ -1,6 +1,5 @@
 import {Fragment} from 'react';
 import {Dialog, Transition} from '@headlessui/react';
-import { HiMiniXMark } from "react-icons/hi2";
 
 export function Drawer ({
   heading,
@@ -74,7 +73,7 @@ export function Drawer ({
                       onClick={onClose}
                       data-test="close-drawer"
                     >
-                      <HiMiniXMark aria-label="Close panel" />
+                      x
                     </button>
                   </header>
                   {children}

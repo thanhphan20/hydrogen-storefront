@@ -1,21 +1,18 @@
 import type {SyntheticEvent} from 'react';
-import {useMemo, useState} from 'react';
+import {useMemo, useState, useEffect} from 'react';
 import {Menu, Disclosure} from '@headlessui/react';
 import {
   Link,
   useLocation,
   useSearchParams,
   useNavigate,
-} from '@remix-run/react';
-import useDebounce from 'react-use/esm/useDebounce';
+} from 'react-router';
+import { FILTER_URL_PREFIX, PRICE_RANGE_FILTER_DEBOUNCE } from '~/constants/url';
 import type {
   Filter,
   ProductFilter,
 } from '@shopify/hydrogen/storefront-api-types';
-import {RiMenuAddLine} from "react-icons/ri";
-import {HiMiniXMark, HiChevronDown} from "react-icons/hi2";
-import { AppliedFilter, SortParam } from '~/type/params';
-import { FILTER_URL_PREFIX, PRICE_RANGE_FILTER_DEBOUNCE } from '~/constants/url';
+import type { AppliedFilter, SortParam } from '~/type/params';
 import { getAppliedFilterLink, getSortLink, getFilterLink, filterInputToParams } from '~/helpers/filterLink';
 
 type Props = {
@@ -41,7 +38,7 @@ export function SortFilter({
             'relative flex items-center justify-center w-8 h-8 focus:ring-primary/5'
           }
         >
-          <RiMenuAddLine />
+          +
         </button>
         <SortMenu />
       </div>
@@ -153,7 +150,7 @@ function AppliedFilters({filters = []}: {filters: AppliedFilter[]}) {
             >
               <span className="flex-grow">{filter.label}</span>
               <span>
-                <HiMiniXMark />
+                x
               </span>
             </Link>
           );
@@ -174,8 +171,8 @@ function PriceRangeFilter({max, min}: {max?: number; min?: number}) {
   const [minPrice, setMinPrice] = useState(min);
   const [maxPrice, setMaxPrice] = useState(max);
 
-  useDebounce(
-    () => {
+  useEffect(() => {
+    const timer = setTimeout(() => {
       if (minPrice === undefined && maxPrice === undefined) {
         params.delete(`${FILTER_URL_PREFIX}price`);
         navigate(`${location.pathname}?${params.toString()}`);
@@ -188,10 +185,9 @@ function PriceRangeFilter({max, min}: {max?: number; min?: number}) {
       };
       const newParams = filterInputToParams({price}, params);
       navigate(`${location.pathname}?${newParams.toString()}`);
-    },
-    PRICE_RANGE_FILTER_DEBOUNCE,
-    [minPrice, maxPrice],
-  );
+    }, PRICE_RANGE_FILTER_DEBOUNCE);
+    return () => clearTimeout(timer);
+  }, [minPrice, maxPrice]);
 
   const onChangeMax = (event: SyntheticEvent) => {
     const value = (event.target as HTMLInputElement).value;
@@ -268,7 +264,7 @@ export default function SortMenu() {
           <span className="px-2 font-medium">Sort by:</span>
           <span>{(activeItem || items[0]).label}</span>
         </span>
-        <HiChevronDown />
+        v
       </Menu.Button>
 
       <Menu.Items

@@ -1,4 +1,4 @@
-import {Region} from "~/type/locale"
+import type {Region} from "~/type/locale"
 import {getRegion} from '~/lib/cookie';
 
 export function usePrefixPathWithRegion(path: string) {

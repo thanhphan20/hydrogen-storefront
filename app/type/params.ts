@@ -1,4 +1,4 @@
-import { ProductFilter } from "@shopify/hydrogen/storefront-api-types";
+import type {ProductFilter} from "@shopify/hydrogen/storefront-api-types";
 
 export type SortParam =
   | 'price-low-high'

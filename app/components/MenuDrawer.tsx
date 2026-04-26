@@ -1,6 +1,6 @@
 import {Link} from "~/components/Link";
 import {Drawer} from "~/components/Drawer";
-import {HeaderProps} from '~/components/Header';
+import type {HeaderProps} from '~/components/Header';
 
 export function MenuDrawer({
   isOpen,
@@ -20,7 +20,7 @@ export function MenuDrawer({
     <Drawer open={isOpen} onClose={onClose} openFrom='left'>
       <div className="grid">
         <nav className="grid gap-4" role="navigation">
-          {(menu || FALLBACK_HEADER_MENU).items.map((item) => {
+          {(menu || FALLBACK_HEADER_MENU).items.map((item: any) => {
             if (!item.url) return null;
 
             // if the url is internal, we strip the domain

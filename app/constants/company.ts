@@ -1,4 +1,4 @@
-import {CreateCompanyDto} from "~/type/company";
+import type {CreateCompanyDto} from "~/type/company";
 
 export const DEFAULT_COMPANY: CreateCompanyDto = {
     name: '',

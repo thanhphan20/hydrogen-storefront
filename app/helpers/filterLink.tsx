@@ -1,8 +1,8 @@
-import { ProductFilter } from "@shopify/hydrogen/storefront-api-types";
-import type {Location} from '@remix-run/react';
-import {useLocation} from '@remix-run/react';
+import type { ProductFilter } from "@shopify/hydrogen/storefront-api-types";
+import type {Location} from 'react-router';
+import {useLocation} from 'react-router';
 import { FILTER_URL_PREFIX } from "~/constants/url";
-import { AppliedFilter, SortParam } from "~/type/params";
+import type { AppliedFilter, SortParam } from "~/type/params";
   
 export function getAppliedFilterLink(
   filter: AppliedFilter,

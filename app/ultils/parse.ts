@@ -1,4 +1,4 @@
-import {Locale} from "~/type/locale";
+import type {Locale} from "~/type/locale";
 
 export function parseAsCurrency(value: number, locale: Locale) {
     return new Intl.NumberFormat(locale.language + '-' + locale.country, {

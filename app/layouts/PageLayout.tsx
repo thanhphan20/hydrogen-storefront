@@ -1,4 +1,4 @@
-import {Await, Link} from '@remix-run/react';
+import {Await, Link} from 'react-router';
 import {Suspense, useId, useState, useEffect} from 'react';
 import type {
   CartApiQueryFragment,
@@ -72,7 +72,7 @@ function CartAside({cart}: {cart: PageLayoutProps['cart']}) {
     <Aside type="cart" heading="CART">
       <Suspense fallback={<p>Loading cart ...</p>}>
         <Await resolve={cart}>
-          {(cart) => {
+          {(cart: any) => {
             return <CartMain cart={cart} layout="aside" />;
           }}
         </Await>

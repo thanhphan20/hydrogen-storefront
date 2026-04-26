@@ -1,4 +1,4 @@
-import {useFetcher, useLocation, useNavigate} from '@remix-run/react';
+import {useFetcher, useLocation, useNavigate} from 'react-router';
 import type {Region, Regions} from '~/type/locale';
 import {useEffect, useState} from 'react';
 import {getRegion, setRegion} from '~/lib/cookie';

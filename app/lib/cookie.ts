@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie';
-import {Region} from '~/type/locale';
+import type {Region} from '~/type/locale';
 
 export interface CookieOptions {
     expires?: number | Date;

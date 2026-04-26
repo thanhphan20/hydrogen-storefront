@@ -1,6 +1,5 @@
 import {Fragment} from 'react';
 import {Dialog, Transition} from '@headlessui/react';
-import {HiMiniXMark} from "react-icons/hi2";
 
 export function Modal ({
     heading,
@@ -55,7 +54,7 @@ export function Modal ({
                                         onClick={onClose}
                                         data-test="close-drawer"
                                     >
-                                        <HiMiniXMark aria-label="Close panel" />
+                                        x
                                     </button>
                                 </header>
                                 {children}

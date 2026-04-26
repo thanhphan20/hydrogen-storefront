@@ -3,7 +3,7 @@ import {
   NavLink as RemixNavLink,
   type NavLinkProps as RemixNavLinkProps,
   type LinkProps as RemixLinkProps,
-} from '@remix-run/react';
+} from 'react-router';
 import {getRegion} from '~/lib/cookie';
 
 type LinkProps = Omit<RemixLinkProps, 'className'> & {
