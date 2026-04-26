@@ -175,7 +175,7 @@ function PriceRangeFilter({max, min}: {max?: number; min?: number}) {
     const timer = setTimeout(() => {
       if (minPrice === undefined && maxPrice === undefined) {
         params.delete(`${FILTER_URL_PREFIX}price`);
-        navigate(`${location.pathname}?${params.toString()}`);
+        void navigate(`${location.pathname}?${params.toString()}`);
         return;
       }
 
@@ -184,10 +184,10 @@ function PriceRangeFilter({max, min}: {max?: number; min?: number}) {
         ...(maxPrice === undefined ? {} : {max: maxPrice}),
       };
       const newParams = filterInputToParams({price}, params);
-      navigate(`${location.pathname}?${newParams.toString()}`);
+      void navigate(`${location.pathname}?${newParams.toString()}`);
     }, PRICE_RANGE_FILTER_DEBOUNCE);
     return () => clearTimeout(timer);
-  }, [minPrice, maxPrice]);
+  }, [minPrice, maxPrice, params, location.pathname, navigate]);
 
   const onChangeMax = (event: SyntheticEvent) => {
     const value = (event.target as HTMLInputElement).value;

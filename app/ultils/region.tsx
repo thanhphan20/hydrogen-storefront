@@ -1,6 +1,3 @@
-import {useLocation} from 'react-router';
-
-export function isRegionNA(): boolean {
-  const { pathname } = useLocation();
+export function isRegionNA(pathname: string): boolean {
   return pathname.startsWith('/na/');
 }

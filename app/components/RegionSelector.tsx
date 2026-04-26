@@ -12,11 +12,11 @@ export function RegionSelector() {
 
   useEffect(() => {
     if (!fetcher.data) {
-      fetcher.load('/api/regions');
+      void fetcher.load('/api/regions');
       return;
     }
     setRegions(fetcher.data as Regions);
-  }, [fetcher.data]);
+  }, [fetcher.data, fetcher]);
 
   const pathWithoutRegion = `${pathname.replace(
     (selectedRegion as Region)?.pathPrefix || '',
@@ -33,7 +33,7 @@ export function RegionSelector() {
         pathWithoutRegion,
       });
       setRegion(regionLocale);
-      navigate(regionUrlPath);
+      void navigate(regionUrlPath);
     }
   };
 

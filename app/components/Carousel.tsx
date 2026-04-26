@@ -27,6 +27,7 @@ export function Carousel<T> ({slides, renderSlide}: CarouselProps<T>) {
       <div className="overflow-hidden">
         {slides.map((slide, index) => (
           <Transition
+            // eslint-disable-next-line react/no-array-index-key
             key={index}
             show={index === currentIndex}
             enter="transform transition ease-in-out duration-500"
