@@ -1,5 +1,5 @@
 import {Suspense} from 'react';
-import {Await, NavLink} from '@remix-run/react';
+import {Await, NavLink} from 'react-router';
 import type {FooterQuery, HeaderQuery} from 'storefrontapi.generated';
 
 interface FooterProps {
@@ -16,19 +16,17 @@ export function Footer({
   return (
     <Suspense>
       <Await resolve={footerPromise}>
-        {(footer) => {
-          if (!footer?.menu) return null;
-          return (
-            <footer className={`footer min-h-[12rem] p-6`}>
-              {footer.menu && header.shop.primaryDomain?.url && (
-                <FooterMenu
-                  menu={footer.menu}
-                  primaryDomainUrl={header.shop.primaryDomain.url}
-                  publicStoreDomain={publicStoreDomain}
-                />
-              )}
-            </footer>
-        )}}
+        {(footer) => (
+          <footer className="footer">
+            {footer?.menu && header.shop.primaryDomain?.url && (
+              <FooterMenu
+                menu={footer.menu}
+                primaryDomainUrl={header.shop.primaryDomain.url}
+                publicStoreDomain={publicStoreDomain}
+              />
+            )}
+          </footer>
+        )}
       </Await>
     </Suspense>
   );
@@ -45,64 +43,33 @@ function FooterMenu({
 }) {
   return (
     <nav className="footer-menu" role="navigation">
-      {(menu?.items || FALLBACK_FOOTER_MENU.items).map((item) => (
-        <div key={item.id} className="flex items-start justify-start flex-col gap-3 w-1/3">
-          <div>
-            <FooterLink
-              item={item}
-              url={
-                item.url!.includes('myshopify.com') ||
-                item.url!.includes(publicStoreDomain) ||
-                item.url!.includes(primaryDomainUrl)
-                  ? new URL(item.url!).pathname
-                  : item.url
-              }
-              isExternal={!item.url!.startsWith('/')}
-            />
-          </div>
-
-          {/* Map through nested items if any */}
-          {item.items && item.items.length > 0 && (
-            <div className="flex items-start flex-col gap-1">
-              {item.items.map((subItem) => (
-                <FooterLink
-                  key={subItem.id}
-                  item={subItem}
-                  url={
-                    subItem.url!.includes('myshopify.com') ||
-                    subItem.url!.includes(publicStoreDomain) ||
-                    subItem.url!.includes(primaryDomainUrl)
-                      ? new URL(subItem.url!).pathname
-                      : subItem.url
-                  }
-                  isExternal={!subItem.url!.startsWith('/')}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-      ))}
+      {(menu || FALLBACK_FOOTER_MENU).items.map((item) => {
+        if (!item.url) return null;
+        // if the url is internal, we strip the domain
+        const url =
+          item.url.includes('myshopify.com') ||
+          item.url.includes(publicStoreDomain) ||
+          item.url.includes(primaryDomainUrl)
+            ? new URL(item.url).pathname
+            : item.url;
+        const isExternal = !url.startsWith('/');
+        return isExternal ? (
+          <a href={url} key={item.id} rel="noopener noreferrer" target="_blank">
+            {item.title}
+          </a>
+        ) : (
+          <NavLink
+            end
+            key={item.id}
+            prefetch="intent"
+            style={activeLinkStyle}
+            to={url}
+          >
+            {item.title}
+          </NavLink>
+        );
+      })}
     </nav>
-  );
-}
-
-function FooterLink({
-  item,
-  url,
-  isExternal,
-}: {
-  item: any;
-  url: any;
-  isExternal: boolean;
-}) {
-  return isExternal ? (
-    <a href={url} rel="noopener noreferrer" target="_blank">
-      {item.title}
-    </a>
-  ) : (
-    <NavLink end prefetch="intent" style={activeLinkStyle} to={url}>
-      {item.title}
-    </NavLink>
   );
 }
 

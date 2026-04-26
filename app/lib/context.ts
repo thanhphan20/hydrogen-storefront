@@ -1,13 +1,28 @@
 import {createHydrogenContext} from '@shopify/hydrogen';
-import {createAdminApiClient} from '@shopify/admin-api-client';
 import {AppSession} from '~/lib/session';
-import {CART_QUERY_FRAGMENT} from '~/graphql/fragment-query/cart-query';
+import {CART_QUERY_FRAGMENT} from '~/lib/fragments';
+
+// Define the additional context object
+const additionalContext = {
+  // Additional context for custom properties, CMS clients, 3P SDKs, etc.
+  // These will be available as both context.propertyName and context.get(propertyContext)
+  // Example of complex objects that could be added:
+  // cms: await createCMSClient(env),
+  // reviews: await createReviewsClient(env),
+} as const;
+
+// Automatically augment HydrogenAdditionalContext with the additional context type
+type AdditionalContextType = typeof additionalContext;
+
+declare global {
+  interface HydrogenAdditionalContext extends AdditionalContextType {}
+}
 
 /**
- * The context implementation is separate from server.ts
- * so that type can be extracted for AppLoadContext
+ * Creates Hydrogen context for React Router 7.9.x
+ * Returns HydrogenRouterContextProvider with hybrid access patterns
  * */
-export async function createAppLoadContext(
+export async function createHydrogenRouterContext(
   request: Request,
   env: Env,
   executionContext: ExecutionContext,
@@ -25,25 +40,21 @@ export async function createAppLoadContext(
     AppSession.init(request, [env.SESSION_SECRET]),
   ]);
 
-  const hydrogenContext = createHydrogenContext({
-    env,
-    request,
-    cache,
-    waitUntil,
-    session,
-    i18n: {language: 'EN', country: 'US'},
-    cart: {
-      queryFragment: CART_QUERY_FRAGMENT,
+  const hydrogenContext = createHydrogenContext(
+    {
+      env,
+      request,
+      cache,
+      waitUntil,
+      session,
+      // Or detect from URL path based on locale subpath, cookies, or any other strategy
+      i18n: {language: 'EN', country: 'US'},
+      cart: {
+        queryFragment: CART_QUERY_FRAGMENT,
+      },
     },
-  });
+    additionalContext,
+  );
 
-  return {
-    ...hydrogenContext,
-    admin: createAdminApiClient({
-      storeDomain: `https://${env.PUBLIC_STORE_DOMAIN}`,
-      accessToken: env.PRIVATE_ADMIN_ACCESS_TOKEN,
-      apiVersion: env.PRIVATE_ADMIN_API_VERSION || '2024-10',
-    }),
-    // declare additional Remix loader context
-  };
+  return hydrogenContext;
 }
