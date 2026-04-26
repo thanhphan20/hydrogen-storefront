@@ -4,8 +4,13 @@ import {oxygen} from '@shopify/mini-oxygen/vite';
 import {reactRouter} from '@react-router/dev/vite';
 import tailwindcss from '@tailwindcss/vite';
 
-export default defineConfig({
-  plugins: [tailwindcss(), hydrogen(), oxygen(), reactRouter()],
+export default defineConfig(({mode}) => ({
+  plugins: [
+    tailwindcss(),
+    hydrogen(),
+    mode === 'development' ? oxygen() : null,
+    reactRouter(),
+  ].filter(Boolean),
   resolve: {
     tsconfigPaths: true,
   },
@@ -38,4 +43,4 @@ export default defineConfig({
   server: {
     allowedHosts: ['.tryhydrogen.dev'],
   },
-});
+}));

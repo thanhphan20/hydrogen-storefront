@@ -9,3 +9,5 @@ node_modules
 
 .agent
 .react-router
+.vercel
+.env*.local
