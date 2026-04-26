@@ -1,5 +1,5 @@
 import {
-  data as remixData,
+  data as routerData,
   Form,
   NavLink,
   Outlet,
@@ -24,7 +24,7 @@ export async function loader({context}: Route.LoaderArgs) {
     throw new Error('Customer not found');
   }
 
-  return remixData(
+  return routerData(
     {customer: data.customer},
     {
       headers: {
