@@ -6,6 +6,8 @@ import {
   useState,
 } from 'react';
 import {useId} from 'react';
+import {X} from 'lucide-react';
+import {Button} from '~/components/ui/button';
 
 type AsideType = 'search' | 'cart' | 'mobile' | 'closed';
 type AsideContextValue = {
@@ -61,12 +63,17 @@ export function Aside({
       aria-labelledby={id}
     >
       <button className="close-outside" onClick={close} />
-      <aside>
-        <header>
-          <h3 id={id}>{heading}</h3>
-          <button className="close reset" onClick={close} aria-label="Close">
-            &times;
-          </button>
+      <aside className="bg-white shadow-xl">
+        <header className="flex items-center justify-between px-6 py-4 border-b">
+          <h3 id={id} className="text-lg font-bold">{heading}</h3>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={close}
+            aria-label="Close"
+          >
+            <X className="h-5 w-5" />
+          </Button>
         </header>
         <main>{children}</main>
       </aside>

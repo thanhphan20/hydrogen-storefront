@@ -1,5 +1,6 @@
 import {Await, Link} from 'react-router';
 import {Suspense, useId} from 'react';
+import {ArrowRight} from 'lucide-react';
 import type {
   CartApiQueryFragment,
   FooterQuery,
@@ -14,6 +15,8 @@ import {
   SearchFormPredictive,
 } from '~/components/SearchFormPredictive';
 import {SearchResultsPredictive} from '~/components/SearchResultsPredictive';
+import {Button} from '~/components/ui/button';
+import {Input} from '~/components/ui/input';
 
 interface PageLayoutProps {
   cart: Promise<CartApiQueryFragment | null>;
@@ -45,7 +48,7 @@ export function PageLayout({
           publicStoreDomain={publicStoreDomain}
         />
       )}
-      <main>{children}</main>
+      <main className="min-h-screen">{children}</main>
       <Footer
         footer={footer}
         header={header}
@@ -58,7 +61,7 @@ export function PageLayout({
 function CartAside({cart}: {cart: PageLayoutProps['cart']}) {
   return (
     <Aside type="cart" heading="CART">
-      <Suspense fallback={<p>Loading cart ...</p>}>
+      <Suspense fallback={<p className="p-4">Loading cart ...</p>}>
         <Await resolve={cart}>
           {(cart) => {
             return <CartMain cart={cart} layout="aside" />;
@@ -73,12 +76,11 @@ function SearchAside() {
   const queriesDatalistId = useId();
   return (
     <Aside type="search" heading="SEARCH">
-      <div className="predictive-search">
-        <br />
+      <div className="predictive-search p-4">
         <SearchFormPredictive>
           {({fetchResults, goToSearch, inputRef}) => (
-            <>
-              <input
+            <div className="flex gap-2 mb-6">
+              <Input
                 name="q"
                 onChange={fetchResults}
                 onFocus={fetchResults}
@@ -86,10 +88,10 @@ function SearchAside() {
                 ref={inputRef}
                 type="search"
                 list={queriesDatalistId}
+                className="flex-1"
               />
-              &nbsp;
-              <button onClick={goToSearch}>Search</button>
-            </>
+              <Button onClick={goToSearch}>Search</Button>
+            </div>
           )}
         </SearchFormPredictive>
 
@@ -98,7 +100,7 @@ function SearchAside() {
             const {articles, collections, pages, products, queries} = items;
 
             if (state === 'loading' && term.current) {
-              return <div>Loading...</div>;
+              return <div className="p-4 text-center">Loading...</div>;
             }
 
             if (!total) {
@@ -106,7 +108,7 @@ function SearchAside() {
             }
 
             return (
-              <>
+              <div className="space-y-8">
                 <SearchResultsPredictive.Queries
                   queries={queries}
                   queriesDatalistId={queriesDatalistId}
@@ -135,14 +137,15 @@ function SearchAside() {
                   <Link
                     onClick={closeSearch}
                     to={`${SEARCH_ENDPOINT}?q=${term.current}`}
+                    className="flex items-center gap-2 font-bold hover:underline"
                   >
                     <p>
                       View all results for <q>{term.current}</q>
-                      &nbsp; →
                     </p>
+                    <ArrowRight className="h-4 w-4" />
                   </Link>
                 ) : null}
-              </>
+              </div>
             );
           }}
         </SearchResultsPredictive>
@@ -162,12 +165,14 @@ function MobileMenuAside({
     header.menu &&
     header.shop.primaryDomain?.url && (
       <Aside type="mobile" heading="MENU">
-        <HeaderMenu
-          menu={header.menu}
-          viewport="mobile"
-          primaryDomainUrl={header.shop.primaryDomain.url}
-          publicStoreDomain={publicStoreDomain}
-        />
+        <div className="p-4">
+          <HeaderMenu
+            menu={header.menu}
+            viewport="mobile"
+            primaryDomainUrl={header.shop.primaryDomain.url}
+            publicStoreDomain={publicStoreDomain}
+          />
+        </div>
       </Aside>
     )
   );

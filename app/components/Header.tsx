@@ -5,8 +5,10 @@ import {
   useAnalytics,
   useOptimisticCart,
 } from '@shopify/hydrogen';
+import {Menu, Search, ShoppingBag, User} from 'lucide-react';
 import type {HeaderQuery, CartApiQueryFragment} from 'storefrontapi.generated';
 import {useAside} from '~/components/Aside';
+import {Button} from '~/components/ui/button';
 
 export interface HeaderProps {
   header: HeaderQuery;
@@ -25,9 +27,9 @@ export function Header({
 }: HeaderProps) {
   const {shop, menu} = header;
   return (
-    <header className="header">
-      <NavLink prefetch="intent" to="/" style={activeLinkStyle} end>
-        <strong>{shop.name}</strong>
+    <header className="header flex items-center justify-between px-6 py-4 border-b">
+      <NavLink prefetch="intent" to="/" style={activeLinkStyle} end className="text-xl font-bold">
+        {shop.name}
       </NavLink>
       <HeaderMenu
         menu={menu}
@@ -51,7 +53,7 @@ export function HeaderMenu({
   viewport: Viewport;
   publicStoreDomain: HeaderProps['publicStoreDomain'];
 }) {
-  const className = `header-menu-${viewport}`;
+  const className = `header-menu-${viewport} flex gap-4`;
   const {close} = useAside();
 
   return (
@@ -79,7 +81,7 @@ export function HeaderMenu({
             : item.url;
         return (
           <NavLink
-            className="header-menu-item"
+            className="header-menu-item hover:underline"
             end
             key={item.id}
             onClick={close}
@@ -100,12 +102,17 @@ function HeaderCtas({
   cart,
 }: Pick<HeaderProps, 'isLoggedIn' | 'cart'>) {
   return (
-    <nav className="header-ctas" role="navigation">
+    <nav className="header-ctas flex items-center gap-4" role="navigation">
       <HeaderMenuMobileToggle />
       <NavLink prefetch="intent" to="/account" style={activeLinkStyle}>
-        <Suspense fallback="Sign in">
-          <Await resolve={isLoggedIn} errorElement="Sign in">
-            {(isLoggedIn) => (isLoggedIn ? 'Account' : 'Sign in')}
+        <Suspense fallback={<User className="h-5 w-5" />}>
+          <Await resolve={isLoggedIn}>
+            {(isLoggedIn) => (
+              <div className="flex items-center gap-2">
+                <User className="h-5 w-5" />
+                <span className="hidden md:inline">{isLoggedIn ? 'Account' : 'Sign in'}</span>
+              </div>
+            )}
           </Await>
         </Suspense>
       </NavLink>
@@ -118,21 +125,23 @@ function HeaderCtas({
 function HeaderMenuMobileToggle() {
   const {open} = useAside();
   return (
-    <button
-      className="header-menu-mobile-toggle reset"
+    <Button
+      variant="ghost"
+      size="icon"
+      className="md:hidden"
       onClick={() => open('mobile')}
     >
-      <h3>☰</h3>
-    </button>
+      <Menu className="h-6 w-6" />
+    </Button>
   );
 }
 
 function SearchToggle() {
   const {open} = useAside();
   return (
-    <button className="reset" onClick={() => open('search')}>
-      Search
-    </button>
+    <Button variant="ghost" size="icon" onClick={() => open('search')}>
+      <Search className="h-5 w-5" />
+    </Button>
   );
 }
 
@@ -141,8 +150,9 @@ function CartBadge({count}: {count: number}) {
   const {publish, shop, cart, prevCart} = useAnalytics();
 
   return (
-    <a
-      href="/cart"
+    <Button
+      variant="ghost"
+      className="relative"
       onClick={(e) => {
         e.preventDefault();
         open('cart');
@@ -154,8 +164,13 @@ function CartBadge({count}: {count: number}) {
         } as CartViewPayload);
       }}
     >
-      Cart <span aria-label={`(items: ${count})`}>{count}</span>
-    </a>
+      <ShoppingBag className="h-5 w-5" />
+      {count > 0 && (
+        <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-black text-[10px] text-white">
+          {count}
+        </span>
+      )}
+    </Button>
   );
 }
 
@@ -226,6 +241,6 @@ function activeLinkStyle({
 }) {
   return {
     fontWeight: isActive ? 'bold' : undefined,
-    color: isPending ? 'grey' : 'black',
+    color: isPending ? 'grey' : undefined,
   };
 }

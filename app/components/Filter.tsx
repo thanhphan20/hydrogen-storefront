@@ -1,19 +1,38 @@
 import type {SyntheticEvent} from 'react';
 import {useMemo, useState, useEffect} from 'react';
-import {Menu, Disclosure} from '@headlessui/react';
 import {
   Link,
   useLocation,
   useSearchParams,
   useNavigate,
 } from 'react-router';
-import { FILTER_URL_PREFIX, PRICE_RANGE_FILTER_DEBOUNCE } from '~/constants/url';
+import {Plus, ChevronDown, X} from 'lucide-react';
+import {FILTER_URL_PREFIX, PRICE_RANGE_FILTER_DEBOUNCE} from '~/constants/url';
 import type {
   Filter,
   ProductFilter,
 } from '@shopify/hydrogen/storefront-api-types';
-import type { AppliedFilter, SortParam } from '~/type/params';
-import { getAppliedFilterLink, getSortLink, getFilterLink, filterInputToParams } from '~/helpers/filterLink';
+import type {AppliedFilter, SortParam} from '~/type/params';
+import {
+  getAppliedFilterLink,
+  getSortLink,
+  getFilterLink,
+  filterInputToParams,
+} from '~/helpers/filterLink';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '~/components/ui/accordion';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '~/components/ui/dropdown-menu';
+import {Button} from '~/components/ui/button';
+import {Input} from '~/components/ui/input';
 
 type Props = {
   filters: Filter[];
@@ -31,23 +50,23 @@ export function SortFilter({
   const [isOpen, setIsOpen] = useState(false);
   return (
     <>
-      <div className="flex items-center justify-between w-full">
-        <button
+      <div className="flex w-full items-center justify-between py-4">
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={() => setIsOpen(!isOpen)}
-          className={
-            'relative flex items-center justify-center w-8 h-8 focus:ring-primary/5'
-          }
+          className="relative h-8 w-8"
         >
-          +
-        </button>
+          <Plus className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-45' : ''}`} />
+        </Button>
         <SortMenu />
       </div>
       <div className="flex flex-col flex-wrap md:flex-row">
         <div
           className={`transition-all duration-200 ${
             isOpen
-              ? 'opacity-100 min-w-full md:min-w-[240px] md:w-[240px] md:pr-8 max-h-full'
-              : 'opacity-0 md:min-w-[0px] md:w-[0px] pr-0 max-h-0 md:max-h-full'
+              ? 'max-h-full min-w-full opacity-100 md:w-[240px] md:min-w-[240px] md:pr-8'
+              : 'max-h-0 pr-0 opacity-0 md:max-h-full md:w-[0px] md:min-w-[0px]'
           }`}
         >
           <FiltersDrawer filters={filters} appliedFilters={appliedFilters} />
@@ -81,7 +100,7 @@ export function FiltersDrawer({
         const to = getFilterLink(option.input as string, params, location);
         return (
           <Link
-            className="focus:underline hover:underline"
+            className="hover:underline focus:underline"
             prefetch="intent"
             to={to}
           >
@@ -92,43 +111,33 @@ export function FiltersDrawer({
   };
 
   return (
-    <>
-      <nav className="py-8">
-        {appliedFilters.length > 0 ? (
-          <div className="pb-8">
-            <AppliedFilters filters={appliedFilters} />
-          </div>
-        ) : null}
-
-        <h4 className="pb-4">
-          Filter By
-        </h4>
-        <div className="divide-y">
-          {filters.map((filter: Filter) => (
-            <Disclosure as="div" key={filter.id} className="w-full">
-              {({open}) => (
-                <>
-                  <Disclosure.Button className="flex justify-between w-full py-4">
-                    <div>{filter.label}</div>
-                  </Disclosure.Button>
-                  <Disclosure.Panel key={filter.id}>
-                    <ul key={filter.id} className="py-2">
-                      {filter.values?.map((option) => {
-                        return (
-                          <li key={option.id} className="pb-4">
-                            {filterMarkup(filter, option)}
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </Disclosure.Panel>
-                </>
-              )}
-            </Disclosure>
-          ))}
+    <nav className="py-8">
+      {appliedFilters.length > 0 ? (
+        <div className="pb-8">
+          <AppliedFilters filters={appliedFilters} />
         </div>
-      </nav>
-    </>
+      ) : null}
+
+      <h4 className="pb-4 font-bold">Filter By</h4>
+      <Accordion type="multiple" className="w-full">
+        {filters.map((filter: Filter) => (
+          <AccordionItem key={filter.id} value={filter.id}>
+            <AccordionTrigger className="py-4 text-left">
+              {filter.label}
+            </AccordionTrigger>
+            <AccordionContent>
+              <ul className="py-2">
+                {filter.values?.map((option) => (
+                  <li key={option.id} className="pb-4">
+                    {filterMarkup(filter, option)}
+                  </li>
+                ))}
+              </ul>
+            </AccordionContent>
+          </AccordionItem>
+        ))}
+      </Accordion>
+    </nav>
   );
 }
 
@@ -137,24 +146,18 @@ function AppliedFilters({filters = []}: {filters: AppliedFilter[]}) {
   const location = useLocation();
   return (
     <>
-      <h4 className="pb-4">
-        Applied filters
-      </h4>
+      <h4 className="pb-4 font-bold">Applied filters</h4>
       <div className="flex flex-wrap gap-2">
-        {filters.map((filter: AppliedFilter) => {
-          return (
-            <Link
-              to={getAppliedFilterLink(filter, params, location)}
-              className="flex px-2 border rounded-full gap"
-              key={`${filter.label}-${JSON.stringify(filter.filter)}`}
-            >
-              <span className="flex-grow">{filter.label}</span>
-              <span>
-                x
-              </span>
-            </Link>
-          );
-        })}
+        {filters.map((filter: AppliedFilter) => (
+          <Link
+            to={getAppliedFilterLink(filter, params, location)}
+            className="flex items-center gap-1 rounded-full border px-3 py-1 text-sm hover:bg-gray-100"
+            key={`${filter.label}-${JSON.stringify(filter.filter)}`}
+          >
+            <span>{filter.label}</span>
+            <X className="h-3 w-3" />
+          </Link>
+        ))}
       </div>
     </>
   );
@@ -206,29 +209,27 @@ function PriceRangeFilter({max, min}: {max?: number; min?: number}) {
   };
 
   return (
-    <div className="flex flex-col">
-      <label className="mb-4">
-        <span>from</span>
-        <input
+    <div className="flex flex-col gap-4 py-2">
+      <div className="flex flex-col gap-2">
+        <span className="text-xs uppercase text-gray-500">From</span>
+        <Input
           name="minPrice"
-          className="text-black"
           type="number"
           value={minPrice ?? ''}
-          placeholder={'$'}
+          placeholder="$ Min"
           onChange={onChangeMin}
         />
-      </label>
-      <label>
-        <span>to</span>
-        <input
+      </div>
+      <div className="flex flex-col gap-2">
+        <span className="text-xs uppercase text-gray-500">To</span>
+        <Input
           name="maxPrice"
-          className="text-black"
           type="number"
           value={maxPrice ?? ''}
-          placeholder={'$'}
+          placeholder="$ Max"
           onChange={onChangeMax}
         />
-      </label>
+      </div>
     </div>
   );
 }
@@ -236,56 +237,38 @@ function PriceRangeFilter({max, min}: {max?: number; min?: number}) {
 export default function SortMenu() {
   const items: {label: string; key: SortParam}[] = [
     {label: 'Featured', key: 'featured'},
-    {
-      label: 'Price: Low - High',
-      key: 'price-low-high',
-    },
-    {
-      label: 'Price: High - Low',
-      key: 'price-high-low',
-    },
-    {
-      label: 'Best Selling',
-      key: 'best-selling',
-    },
-    {
-      label: 'Newest',
-      key: 'newest',
-    },
+    {label: 'Price: Low - High', key: 'price-low-high'},
+    {label: 'Price: High - Low', key: 'price-high-low'},
+    {label: 'Best Selling', key: 'best-selling'},
+    {label: 'Newest', key: 'newest'},
   ];
   const [params] = useSearchParams();
   const location = useLocation();
   const activeItem = items.find((item) => item.key === params.get('sort'));
 
   return (
-    <Menu as="div" className="relative z-40">
-      <Menu.Button className="flex items-center">
-        <span className="px-2">
-          <span className="px-2 font-medium">Sort by:</span>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="flex items-center gap-2">
+          <span className="font-medium text-gray-500">Sort by:</span>
           <span>{(activeItem || items[0]).label}</span>
-        </span>
-        v
-      </Menu.Button>
-
-      <Menu.Items
-        as="nav"
-        className="absolute right-0 flex flex-col p-4 text-right rounded-md bg-white"
-      >
+          <ChevronDown className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-48 bg-white">
         {items.map((item) => (
-          <Menu.Item key={item.label}>
-            {() => (
-              <Link
-                className={`block text-sm pb-2 px-3 ${
-                  activeItem?.key === item.key ? 'font-bold' : 'font-normal'
-                }`}
-                to={getSortLink(item.key, params, location)}
-              >
-                {item.label}
-              </Link>
-            )}
-          </Menu.Item>
+          <DropdownMenuItem key={item.key} asChild>
+            <Link
+              to={getSortLink(item.key, params, location)}
+              className={`w-full cursor-pointer ${
+                activeItem?.key === item.key ? 'font-bold' : ''
+              }`}
+            >
+              {item.label}
+            </Link>
+          </DropdownMenuItem>
         ))}
-      </Menu.Items>
-    </Menu>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
