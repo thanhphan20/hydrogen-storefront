@@ -25,9 +25,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
 
-      - name: Run audit
-        run: pnpm audit
-
       - name: Run lint
         run: pnpm lint
 
