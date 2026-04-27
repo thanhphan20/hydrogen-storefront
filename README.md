@@ -12,6 +12,7 @@ This template is a production-ready "Skeleton" designed to be the ultimate start
 - **Shadcn UI**: A collection of beautifully designed, accessible, and fully customizable components built on top of Radix UI primitives.
 - **pnpm & Vite 8**: Blazing fast dependency management and HMR (Hot Module Replacement) for a frictionless developer workflow.
 - **Oxygen & MiniOxygen**: Seamless local development and global deployment on Shopify's edge hosting platform.
+- **Vercel Deployment**: Ready for production deployment on Vercel with edge runtime support.
 
 ## Folder Structure
 
@@ -46,6 +47,24 @@ pnpm install
 # Start local development server
 pnpm dev
 ```
+
+## Deployment
+
+### Vercel (Recommended)
+
+This template can be deployed to Vercel with edge runtime support:
+
+```bash
+# Install Vercel CLI
+pnpm add -g vercel
+
+# Deploy to Vercel
+vercel
+```
+
+### Shopify Oxygen
+
+For deployment to Shopify's Oxygen edge hosting platform:
 
 ## Configuration
 
