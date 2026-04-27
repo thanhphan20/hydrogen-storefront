@@ -192,8 +192,8 @@ export function vercel(options: VercelPluginOptions = {}): Plugin[] {
           );
 
           // Build summary
-          console.log('hydrogen-vercel: Build Output generated at .vercel/output/');
-          console.log(`  - Function: index.func/ (${runtime}${streaming ? ', streaming' : ''})`);
+          console.warn('hydrogen-vercel: Build Output generated at .vercel/output/');
+          console.warn(`  - Function: index.func/ (${runtime}${streaming ? ', streaming' : ''})`);
         },
       },
     },

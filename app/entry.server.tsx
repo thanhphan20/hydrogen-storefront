@@ -37,7 +37,7 @@ export default async function handleRequest(
     </NonceProvider>,
     {
       nonce,
-      signal: signal,
+      signal,
       onError(error) {
         console.error(error);
         responseStatusCode = 500;

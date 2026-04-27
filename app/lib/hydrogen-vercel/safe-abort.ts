@@ -59,7 +59,7 @@ export function wrapStreamWithCompletion(
       controller.enqueue(value);
     },
     cancel() {
-      reader.cancel();
+      void reader.cancel();
     },
   });
 }

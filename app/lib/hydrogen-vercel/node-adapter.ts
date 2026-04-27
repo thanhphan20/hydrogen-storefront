@@ -60,7 +60,7 @@ export function createVercelHandler(
     const url = req.url || '/';
 
     if (debug) {
-      console.log(`[hydrogen-vercel] ${req.method} ${url}`);
+      console.warn(`[hydrogen-vercel] ${req.method} ${url}`);
     }
 
     try {
@@ -77,7 +77,7 @@ export function createVercelHandler(
       await sendResponse(res, response);
 
       if (debug) {
-        console.log(
+        console.warn(
           `[hydrogen-vercel] ${response.status} ${url} (${Date.now() - startTime}ms)`,
         );
       }

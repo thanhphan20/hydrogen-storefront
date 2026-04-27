@@ -53,7 +53,7 @@ export class UpstashCache implements Cache {
 
   private log(message: string) {
     if (this.debug) {
-      console.log(message);
+      console.warn(message);
     }
   }
 
@@ -262,7 +262,7 @@ export function createUpstashCache(options: UpstashCacheOptions = {}): Cache {
   try {
     const redis = Redis.fromEnv();
     if (debug) {
-      console.log('[UpstashCache] Initialized successfully');
+      console.warn('[UpstashCache] Initialized successfully');
     }
     return new UpstashCache(redis, debug);
   } catch (error) {
