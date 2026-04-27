@@ -2,6 +2,10 @@ import {ServerRouter} from 'react-router';
 import {isbot} from 'isbot';
 import {renderToReadableStream} from 'react-dom/server';
 import {
+  createSafeSignal,
+  wrapStreamWithCompletion,
+} from './lib/hydrogen-vercel';
+import {
   createContentSecurityPolicy,
   type HydrogenRouterContextProvider,
 } from '@shopify/hydrogen';
@@ -21,6 +25,8 @@ export default async function handleRequest(
     },
   });
 
+  const {signal, markComplete} = createSafeSignal(request.signal);
+
   const body = await renderToReadableStream(
     <NonceProvider>
       <ServerRouter
@@ -31,7 +37,7 @@ export default async function handleRequest(
     </NonceProvider>,
     {
       nonce,
-      signal: request.signal,
+      signal: signal,
       onError(error) {
         console.error(error);
         responseStatusCode = 500;
@@ -43,10 +49,12 @@ export default async function handleRequest(
     await body.allReady;
   }
 
+  const safeBody = wrapStreamWithCompletion(body, markComplete);
+
   responseHeaders.set('Content-Type', 'text/html');
   responseHeaders.set('Content-Security-Policy', header);
 
-  return new Response(body, {
+  return new Response(safeBody, {
     headers: responseHeaders,
     status: responseStatusCode,
   });

@@ -1,5 +1,6 @@
 import {createHydrogenContext} from '@shopify/hydrogen';
 import {AppSession} from '~/lib/session';
+import {createUpstashCache} from './redis-cache';
 import {CART_QUERY_FRAGMENT} from '~/lib/fragments';
 
 // Define the additional context object
@@ -36,7 +37,9 @@ export async function createHydrogenRouterContext(
 
   const waitUntil = executionContext.waitUntil.bind(executionContext);
   const [cache, session] = await Promise.all([
-    caches.open('hydrogen'),
+    typeof caches !== 'undefined'
+      ? caches.open('hydrogen')
+      : Promise.resolve(createUpstashCache()),
     AppSession.init(request, [env.SESSION_SECRET]),
   ]);
 
