@@ -3,9 +3,16 @@ import {hydrogen} from '@shopify/hydrogen/vite';
 import {oxygen} from '@shopify/mini-oxygen/vite';
 import {reactRouter} from '@react-router/dev/vite';
 import tailwindcss from '@tailwindcss/vite';
+import {vercel} from './app/lib/hydrogen-vercel';
 
-export default defineConfig({
-  plugins: [tailwindcss(), hydrogen(), oxygen(), reactRouter()],
+export default defineConfig(({mode}) => ({
+  plugins: [
+    tailwindcss(),
+    hydrogen(),
+    mode === 'development' ? oxygen() : null,
+    reactRouter(),
+    vercel(),
+  ].filter(Boolean),
   resolve: {
     tsconfigPaths: true,
   },
@@ -38,4 +45,4 @@ export default defineConfig({
   server: {
     allowedHosts: ['.tryhydrogen.dev'],
   },
-});
+}));

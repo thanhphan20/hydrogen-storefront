@@ -1,6 +1,28 @@
 import * as serverBuild from 'virtual:react-router/server-build';
 import {createRequestHandler, storefrontRedirect} from '@shopify/hydrogen';
+import {waitUntil as vercelWaitUntil} from '@vercel/functions';
 import {createHydrogenRouterContext} from '~/lib/context';
+
+/**
+ * Maps process.env to the Env object expected by Hydrogen.
+ * Used on Vercel where env vars come from process.env instead of Workers bindings.
+ */
+function getEnv(env?: Env): Env {
+  if (env?.SESSION_SECRET) return env;
+  return process.env as unknown as Env;
+}
+
+/**
+ * Creates an ExecutionContext for Vercel environments.
+ * Uses @vercel/functions waitUntil for background tasks.
+ */
+function getExecutionContext(ctx?: ExecutionContext): ExecutionContext {
+  if (ctx?.waitUntil) return ctx;
+  return {
+    waitUntil: (p: Promise<unknown>) => vercelWaitUntil(p),
+    passThroughOnException: () => {},
+  } as ExecutionContext;
+}
 
 /**
  * Export a fetch handler in module format.
@@ -8,14 +30,17 @@ import {createHydrogenRouterContext} from '~/lib/context';
 export default {
   async fetch(
     request: Request,
-    env: Env,
-    executionContext: ExecutionContext,
+    env?: Env,
+    executionContext?: ExecutionContext,
   ): Promise<Response> {
     try {
+      const resolvedEnv = getEnv(env);
+      const resolvedContext = getExecutionContext(executionContext);
+
       const hydrogenContext = await createHydrogenRouterContext(
         request,
-        env,
-        executionContext,
+        resolvedEnv,
+        resolvedContext,
       );
 
       /**

@@ -15,7 +15,10 @@
   "prettier": "@shopify/prettier-config",
   "dependencies": {
     "@fontsource-variable/geist": "^5.2.8",
+    "@mjackson/node-fetch-server": "^0.7.0",
     "@shopify/hydrogen": "2026.4.2",
+    "@upstash/redis": "^1.37.0",
+    "@vercel/functions": "^3.4.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "embla-carousel-react": "^8.6.0",
