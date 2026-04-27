@@ -4,7 +4,7 @@ import {renderToReadableStream} from 'react-dom/server';
 import {
   createSafeSignal,
   wrapStreamWithCompletion,
-} from './lib/hydrogen-vercel';
+} from './lib/hydrogen-vercel/safe-abort';
 import {
   createContentSecurityPolicy,
   type HydrogenRouterContextProvider,

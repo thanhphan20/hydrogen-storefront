@@ -39,6 +39,7 @@ export default defineConfig(({mode}) => ({
         'react-router',
         'use-sync-external-store',
         'use-sync-external-store/shim',
+        '@vercel/functions',
       ],
     },
   },
