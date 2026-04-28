@@ -18,5 +18,19 @@ export const PRODUCT_FRAGMENT = `#graphql
         height
       }
     }
+    variants(first: 1) {
+      nodes {
+        id
+        availableForSale
+        price {
+          amount
+          currencyCode
+        }
+        compareAtPrice {
+          amount
+          currencyCode
+        }
+      }
+    }
   }
 ` as const

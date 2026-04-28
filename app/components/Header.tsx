@@ -27,18 +27,38 @@ export function Header({
 }: HeaderProps) {
   const {shop, menu} = header;
   return (
-    <header className="header flex items-center justify-between px-6 py-4 border-b">
-      <NavLink prefetch="intent" to="/" style={activeLinkStyle} end className="text-xl font-bold">
-        {shop.name}
-      </NavLink>
-      <HeaderMenu
-        menu={menu}
-        viewport="desktop"
-        primaryDomainUrl={header.shop.primaryDomain.url}
-        publicStoreDomain={publicStoreDomain}
-      />
-      <HeaderCtas isLoggedIn={isLoggedIn} cart={cart} />
-    </header>
+    <div className="flex flex-col w-full sticky top-0 z-40">
+      <div className="bg-black text-white text-[10px] py-2 text-center uppercase tracking-[0.2em] font-bold">
+        Free shipping on orders over $150
+      </div>
+      <header className="bg-white/95 backdrop-blur-md border-b border-black/5 flex flex-col pt-6 pb-2 px-6 gap-6">
+        <div className="flex items-center justify-between">
+          <div className="flex-1 hidden md:flex">
+            {/* Left placeholder for symmetry or search */}
+          </div>
+          <NavLink
+            prefetch="intent"
+            to="/"
+            style={activeLinkStyle}
+            end
+            className="text-3xl font-black tracking-tighter uppercase italic"
+          >
+            {shop.name}
+          </NavLink>
+          <div className="flex-1 flex justify-end">
+            <HeaderCtas isLoggedIn={isLoggedIn} cart={cart} />
+          </div>
+        </div>
+        <div className="hidden md:flex justify-center border-t border-black/[0.03] pt-4">
+          <HeaderMenu
+            menu={menu}
+            viewport="desktop"
+            primaryDomainUrl={header.shop.primaryDomain.url}
+            publicStoreDomain={publicStoreDomain}
+          />
+        </div>
+      </header>
+    </div>
   );
 }
 
@@ -53,7 +73,7 @@ export function HeaderMenu({
   viewport: Viewport;
   publicStoreDomain: HeaderProps['publicStoreDomain'];
 }) {
-  const className = `header-menu-${viewport} flex gap-4`;
+  const className = `header-menu-${viewport} flex gap-10`;
   const {close} = useAside();
 
   return (
@@ -65,6 +85,7 @@ export function HeaderMenu({
           prefetch="intent"
           style={activeLinkStyle}
           to="/"
+          className="uppercase text-xs font-bold tracking-widest border-b border-black/5 pb-4"
         >
           Home
         </NavLink>
@@ -79,9 +100,10 @@ export function HeaderMenu({
           item.url.includes(primaryDomainUrl)
             ? new URL(item.url).pathname
             : item.url;
+
         return (
           <NavLink
-            className="header-menu-item hover:underline"
+            className="header-menu-item uppercase text-[12px] font-bold tracking-[0.15em] hover:text-black/50 transition-colors border-b-2 border-transparent hover:border-black/10"
             end
             key={item.id}
             onClick={close}
@@ -110,7 +132,9 @@ function HeaderCtas({
             {(isLoggedIn) => (
               <div className="flex items-center gap-2">
                 <User className="h-5 w-5" />
-                <span className="hidden md:inline">{isLoggedIn ? 'Account' : 'Sign in'}</span>
+                <span className="hidden md:inline">
+                  {isLoggedIn ? 'Account' : 'Sign in'}
+                </span>
               </div>
             )}
           </Await>

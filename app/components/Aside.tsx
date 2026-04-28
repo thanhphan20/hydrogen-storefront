@@ -63,19 +63,22 @@ export function Aside({
       aria-labelledby={id}
     >
       <button className="close-outside" onClick={close} />
-      <aside className="bg-white shadow-xl">
-        <header className="flex items-center justify-between px-6 py-4 border-b">
-          <h3 id={id} className="text-lg font-bold">{heading}</h3>
+      <aside>
+        <header className="flex items-center justify-between px-6 py-6 border-b border-black/5">
+          <h3 id={id} className="text-[12px] font-black uppercase tracking-[0.2em]">
+            {heading}
+          </h3>
           <Button
             variant="ghost"
             size="icon"
             onClick={close}
             aria-label="Close"
+            className="hover:rotate-90 transition-transform duration-300"
           >
             <X className="h-5 w-5" />
           </Button>
         </header>
-        <main>{children}</main>
+        <main className="h-full overflow-y-auto">{children}</main>
       </aside>
     </div>
   );
