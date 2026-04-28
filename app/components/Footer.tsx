@@ -46,12 +46,25 @@ function FooterMenu({
       {(menu || FALLBACK_FOOTER_MENU).items.map((item) => {
         if (!item.url) return null;
         // if the url is internal, we strip the domain
-        const url =
-          item.url.includes('myshopify.com') ||
-          item.url.includes(publicStoreDomain) ||
-          item.url.includes(primaryDomainUrl)
-            ? new URL(item.url).pathname
-            : item.url;
+        let url = item.url;
+        try {
+          const parsedUrl = new URL(item.url);
+          const publicStoreHostname = new URL(`https://${publicStoreDomain}`).hostname;
+          const primaryDomainHostname = new URL(primaryDomainUrl).hostname;
+          const hostname = parsedUrl.hostname;
+          const isMyshopifyHost =
+            hostname === 'myshopify.com' || hostname.endsWith('.myshopify.com');
+          const isAllowedHost =
+            isMyshopifyHost ||
+            hostname === publicStoreHostname ||
+            hostname === primaryDomainHostname;
+
+          if (isAllowedHost) {
+            url = parsedUrl.pathname;
+          }
+        } catch {
+          // Keep original URL when parsing fails (for example, relative URLs).
+        }
         const isExternal = !url.startsWith('/');
         return isExternal ? (
           <a href={url} key={item.id} rel="noopener noreferrer" target="_blank">
