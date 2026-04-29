@@ -7,6 +7,7 @@ import {
   type PredictiveSearchReturn,
 } from '~/lib/search';
 import {useAside} from './Aside';
+import {Search, FileText, LayoutGrid, Layers} from 'lucide-react';
 
 type PredictiveSearchItems = PredictiveSearchReturn['result']['items'];
 
@@ -88,9 +89,14 @@ function SearchResultsPredictiveArticles({
   if (!articles.length) return null;
 
   return (
-    <div className="predictive-search-result" key="articles">
-      <h5>Articles</h5>
-      <ul>
+    <div className="space-y-4" key="articles">
+      <div className="flex items-center gap-2 px-2">
+        <FileText className="h-4 w-4 text-gray-400" />
+        <h5 className="text-[11px] m-0 font-black uppercase tracking-[0.2em] text-gray-500">
+          Articles
+        </h5>
+      </div>
+      <ul className="grid grid-cols-1 gap-2">
         {articles.map((article) => {
           const articleUrl = urlWithTrackingParams({
             baseUrl: `/blogs/${article.blog.handle}/${article.handle}`,
@@ -99,19 +105,28 @@ function SearchResultsPredictiveArticles({
           });
 
           return (
-            <li className="predictive-search-result-item" key={article.id}>
-              <Link onClick={closeSearch} to={articleUrl}>
-                {article.image?.url && (
+            <li key={article.id}>
+              <Link
+                onClick={closeSearch}
+                to={articleUrl}
+                className="flex items-center gap-4 p-2 rounded-xl hover:bg-gray-50 transition-colors group"
+              >
+                {article.image?.url ? (
                   <Image
                     alt={article.image.altText ?? ''}
                     src={article.image.url}
-                    width={50}
-                    height={50}
+                    width={48}
+                    height={48}
+                    className="rounded-lg object-cover bg-gray-100 flex-shrink-0"
                   />
+                ) : (
+                  <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
+                    <FileText className="h-5 w-5 text-gray-300" />
+                  </div>
                 )}
-                <div>
-                  <span>{article.title}</span>
-                </div>
+                <span className="text-sm font-bold group-hover:underline decoration-1 underline-offset-4">
+                  {article.title}
+                </span>
               </Link>
             </li>
           );
@@ -129,9 +144,14 @@ function SearchResultsPredictiveCollections({
   if (!collections.length) return null;
 
   return (
-    <div className="predictive-search-result" key="collections">
-      <h5>Collections</h5>
-      <ul>
+    <div className="space-y-4" key="collections">
+      <div className="flex items-center gap-2 px-2">
+        <LayoutGrid className="h-4 w-4 text-gray-400" />
+        <h5 className="text-[11px] m-0 font-black uppercase tracking-[0.2em] text-gray-500">
+          Collections
+        </h5>
+      </div>
+      <ul className="grid grid-cols-1 gap-2">
         {collections.map((collection) => {
           const collectionUrl = urlWithTrackingParams({
             baseUrl: `/collections/${collection.handle}`,
@@ -140,19 +160,28 @@ function SearchResultsPredictiveCollections({
           });
 
           return (
-            <li className="predictive-search-result-item" key={collection.id}>
-              <Link onClick={closeSearch} to={collectionUrl}>
-                {collection.image?.url && (
+            <li key={collection.id}>
+              <Link
+                onClick={closeSearch}
+                to={collectionUrl}
+                className="flex items-center gap-4 p-2 rounded-xl hover:bg-gray-50 transition-colors group"
+              >
+                {collection.image?.url ? (
                   <Image
                     alt={collection.image.altText ?? ''}
                     src={collection.image.url}
-                    width={50}
-                    height={50}
+                    width={48}
+                    height={48}
+                    className="rounded-lg object-cover bg-gray-100 flex-shrink-0"
                   />
+                ) : (
+                  <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
+                    <LayoutGrid className="h-5 w-5 text-gray-300" />
+                  </div>
                 )}
-                <div>
-                  <span>{collection.title}</span>
-                </div>
+                <span className="text-sm font-bold group-hover:underline decoration-1 underline-offset-4">
+                  {collection.title}
+                </span>
               </Link>
             </li>
           );
@@ -170,9 +199,14 @@ function SearchResultsPredictivePages({
   if (!pages.length) return null;
 
   return (
-    <div className="predictive-search-result" key="pages">
-      <h5>Pages</h5>
-      <ul>
+    <div className="space-y-4" key="pages">
+      <div className="flex items-center gap-2 px-2">
+        <Layers className="h-4 w-4 text-gray-400" />
+        <h5 className="text-[11px] m-0 font-black uppercase tracking-[0.2em] text-gray-500">
+          Pages
+        </h5>
+      </div>
+      <ul className="grid grid-cols-1 gap-2">
         {pages.map((page) => {
           const pageUrl = urlWithTrackingParams({
             baseUrl: `/pages/${page.handle}`,
@@ -181,11 +215,18 @@ function SearchResultsPredictivePages({
           });
 
           return (
-            <li className="predictive-search-result-item" key={page.id}>
-              <Link onClick={closeSearch} to={pageUrl}>
-                <div>
-                  <span>{page.title}</span>
+            <li key={page.id}>
+              <Link
+                onClick={closeSearch}
+                to={pageUrl}
+                className="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 transition-colors group"
+              >
+                <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
+                  <Layers className="h-5 w-5 text-gray-300" />
                 </div>
+                <span className="text-sm font-bold group-hover:underline decoration-1 underline-offset-4">
+                  {page.title}
+                </span>
               </Link>
             </li>
           );
@@ -203,9 +244,14 @@ function SearchResultsPredictiveProducts({
   if (!products.length) return null;
 
   return (
-    <div className="predictive-search-result" key="products">
-      <h5>Products</h5>
-      <ul>
+    <div className="space-y-4" key="products">
+      <div className="flex items-center gap-2 px-2">
+        <Search className="h-4 w-4 text-gray-400" />
+        <h5 className="text-[11px] m-0 font-black uppercase tracking-[0.2em] text-gray-500">
+          Products
+        </h5>
+      </div>
+      <ul className="grid grid-cols-1 gap-4">
         {products.map((product) => {
           const productUrl = urlWithTrackingParams({
             baseUrl: `/products/${product.handle}`,
@@ -216,19 +262,32 @@ function SearchResultsPredictiveProducts({
           const price = product?.selectedOrFirstAvailableVariant?.price;
           const image = product?.selectedOrFirstAvailableVariant?.image;
           return (
-            <li className="predictive-search-result-item" key={product.id}>
-              <Link to={productUrl} onClick={closeSearch}>
-                {image && (
+            <li key={product.id}>
+              <Link
+                to={productUrl}
+                onClick={closeSearch}
+                className="flex gap-4 p-2 rounded-2xl hover:bg-gray-50 transition-all group"
+              >
+                {image ? (
                   <Image
                     alt={image.altText ?? ''}
                     src={image.url}
-                    width={50}
-                    height={50}
+                    width={80}
+                    height={80}
+                    className="rounded-xl object-cover bg-gray-50 border border-black/5 flex-shrink-0"
                   />
+                ) : (
+                  <div className="w-20 h-20 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0">
+                    <Search className="h-8 w-8 text-gray-200" />
+                  </div>
                 )}
-                <div>
-                  <p>{product.title}</p>
-                  <small>{price && <Money data={price} />}</small>
+                <div className="flex flex-col justify-center py-1">
+                  <h4 className="font-bold text-sm group-hover:underline decoration-1 underline-offset-4 leading-tight mb-1">
+                    {product.title}
+                  </h4>
+                  <div className="text-sm text-gray-600 font-medium">
+                    {price && <Money data={price} />}
+                  </div>
                 </div>
               </Link>
             </li>
@@ -268,9 +327,15 @@ function SearchResultsPredictiveEmpty({
   }
 
   return (
-    <p>
-      No results found for <q>{term.current}</q>
-    </p>
+    <div className="flex flex-col items-center justify-center py-12 text-center px-6">
+      <div className="bg-gray-100 rounded-full p-4 mb-4">
+        <Search className="h-6 w-6 text-gray-400" />
+      </div>
+      <p className="text-gray-500 text-sm">
+        No results found for{' '}
+        <q className="font-bold text-black italic">{term.current}</q>
+      </p>
+    </div>
   );
 }
 

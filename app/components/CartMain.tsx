@@ -4,6 +4,8 @@ import type {CartApiQueryFragment} from 'storefrontapi.generated';
 import {useAside} from '~/components/Aside';
 import {CartLineItem, type CartLine} from '~/components/CartLineItem';
 import {CartSummary} from './CartSummary';
+import {ShoppingBag} from 'lucide-react';
+import {Button} from '~/components/ui/button';
 
 export type CartLayout = 'page' | 'aside';
 
@@ -45,21 +47,21 @@ export function CartMain({layout, cart: originalCart}: CartMainProps) {
   const withDiscount =
     cart &&
     Boolean(cart?.discountCodes?.filter((code) => code.applicable)?.length);
-  const className = `cart-main ${withDiscount ? 'with-discount' : ''}`;
+  const className = `flex flex-col h-full ${withDiscount ? 'with-discount' : ''}`;
   const cartHasItems = cart?.totalQuantity ? cart.totalQuantity > 0 : false;
   const childrenMap = getLineItemChildrenMap(cart?.lines?.nodes ?? []);
 
   return (
-    <section
+    <div
       className={className}
       aria-label={layout === 'page' ? 'Cart page' : 'Cart drawer'}
     >
       <CartEmpty hidden={linesCount} layout={layout} />
-      <div className="cart-details">
+      <div className="flex flex-col h-full">
         <p id="cart-lines" className="sr-only">
           Line items
         </p>
-        <div>
+        <div className="flex-1 overflow-y-auto px-6">
           <ul aria-labelledby="cart-lines">
             {(cart?.lines?.nodes ?? []).map((line) => {
               // we do not render non-parent lines at the root of the cart
@@ -80,9 +82,13 @@ export function CartMain({layout, cart: originalCart}: CartMainProps) {
             })}
           </ul>
         </div>
-        {cartHasItems && <CartSummary cart={cart} layout={layout} />}
+        {cartHasItems && (
+          <div className="border-t border-black/5 bg-gray-50/50 p-6">
+            <CartSummary cart={cart} layout={layout} />
+          </div>
+        )}
       </div>
-    </section>
+    </div>
   );
 }
 
@@ -93,17 +99,23 @@ function CartEmpty({
   layout?: CartMainProps['layout'];
 }) {
   const {close} = useAside();
+  if (hidden) return null;
+
   return (
-    <div hidden={hidden}>
-      <br />
-      <p>
+    <div className="flex flex-col items-center justify-center h-full px-6 py-20 text-center">
+      <div className="bg-gray-100 rounded-full p-6 mb-6">
+        <ShoppingBag className="h-10 w-10 text-gray-400" />
+      </div>
+      <h2 className="text-xl font-bold mb-2">Your cart is empty</h2>
+      <p className="text-gray-500 mb-8 max-w-[250px]">
         Looks like you haven&rsquo;t added anything yet, let&rsquo;s get you
         started!
       </p>
-      <br />
-      <Link to="/collections" onClick={close} prefetch="viewport">
-        Continue shopping →
-      </Link>
+      <Button asChild onClick={close}>
+        <Link to="/collections" prefetch="viewport">
+          Continue shopping
+        </Link>
+      </Button>
     </div>
   );
 }
