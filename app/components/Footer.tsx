@@ -93,12 +93,30 @@ function FooterMenu({
       <div className="flex flex-col gap-2">
         {(menu || FALLBACK_FOOTER_MENU).items.map((item) => {
           if (!item.url) return null;
-          const url =
-            item.url.includes('myshopify.com') ||
-            item.url.includes(publicStoreDomain) ||
-            item.url.includes(primaryDomainUrl)
-              ? new URL(item.url).pathname
-              : item.url;
+
+          let url = item.url;
+          try {
+            const parsedItemUrl = new URL(item.url);
+            const primaryDomainHost = new URL(primaryDomainUrl).hostname;
+            const itemHost = parsedItemUrl.hostname;
+            const isMyshopifyHost =
+              itemHost === 'myshopify.com' ||
+              itemHost.endsWith('.myshopify.com');
+            const isAllowedHost =
+              isMyshopifyHost ||
+              itemHost === publicStoreDomain ||
+              itemHost === primaryDomainHost;
+
+            if (isAllowedHost) {
+              url =
+                parsedItemUrl.pathname +
+                parsedItemUrl.search +
+                parsedItemUrl.hash;
+            }
+          } catch {
+            url = item.url;
+          }
+
           const isExternal = !url.startsWith('/');
           return isExternal ? (
             <a
