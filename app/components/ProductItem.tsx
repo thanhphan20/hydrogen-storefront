@@ -3,6 +3,7 @@ import {Image, Money} from '@shopify/hydrogen';
 import type {
   ProductItemFragment,
   CollectionItemFragment,
+  RecommendedProductFragment,
 } from 'storefrontapi.generated';
 import {useVariantUrl} from '~/lib/variants';
 import {AddToCartButton} from '~/components/AddToCartButton';
@@ -17,7 +18,7 @@ export function ProductItem({
     | RecommendedProductFragment;
   loading?: 'eager' | 'lazy';
 }) {
-  const product = baseProduct as any;
+  const product = baseProduct;
   const variantUrl = useVariantUrl(product.handle);
   const image = product.featuredImage;
   const isSale = false; // TODO: Update fragment to include compareAtPrice

@@ -76,7 +76,7 @@ export default function Homepage() {
           </Link>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-12">
-          {newArrivals.map((product: any) => (
+          {newArrivals.map((product) => (
             <ProductItem key={product.id} product={product} />
           ))}
         </div>
@@ -128,9 +128,9 @@ export default function Homepage() {
         </div>
         <Suspense fallback={<RecommendedSkeleton />}>
           <Await resolve={recommendedProducts}>
-            {(response: any) => (
+            {(response) => (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-12">
-                {response?.products.nodes.map((product: any) => (
+                {response?.products.nodes.map((product) => (
                   <ProductItem key={product.id} product={product} />
                 ))}
               </div>
@@ -233,63 +233,51 @@ const HERO_CAROUSEL_QUERY = `#graphql
   }
 ` as const;
 
+const RECOMMENDED_PRODUCT_FRAGMENT = `#graphql
+  fragment RecommendedProduct on Product {
+    id
+    title
+    handle
+    priceRange {
+      minVariantPrice {
+        amount
+        currencyCode
+      }
+    }
+    featuredImage {
+      id
+      url
+      altText
+      width
+      height
+    }
+    variants(first: 1) {
+      nodes {
+        id
+      }
+    }
+  }
+` as const;
+
 const NEW_ARRIVALS_QUERY = `#graphql
+  ${RECOMMENDED_PRODUCT_FRAGMENT}
   query NewArrivals($country: CountryCode, $language: LanguageCode)
     @inContext(country: $country, language: $language) {
     products(first: 4, sortKey: CREATED_AT, reverse: true) {
       nodes {
-        id
-        title
-        handle
-        priceRange {
-          minVariantPrice {
-            amount
-            currencyCode
-          }
-        }
-        featuredImage {
-          id
-          url
-          altText
-          width
-          height
-        }
-        variants(first: 1) {
-          nodes {
-            id
-          }
-        }
+        ...RecommendedProduct
       }
     }
   }
 ` as const;
 
 const RECOMMENDED_PRODUCTS_QUERY = `#graphql
+  ${RECOMMENDED_PRODUCT_FRAGMENT}
   query RecommendedProducts ($country: CountryCode, $language: LanguageCode)
     @inContext(country: $country, language: $language) {
     products(first: 4, sortKey: RELEVANCE) {
       nodes {
-        id
-        title
-        handle
-        priceRange {
-          minVariantPrice {
-            amount
-            currencyCode
-          }
-        }
-        featuredImage {
-          id
-          url
-          altText
-          width
-          height
-        }
-        variants(first: 1) {
-          nodes {
-            id
-          }
-        }
+        ...RecommendedProduct
       }
     }
   }
