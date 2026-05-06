@@ -32,6 +32,13 @@ export default [
       '**/*.generated.d.ts',
       '**/.react-router/',
       '**/packages/hydrogen/dist/',
+      '**/*.generated.d.ts',
+      '**/.vercel/',
+      '**/.shopify/',
+      '**/.react-router/',
+      '**/.agent/',
+      '**/.cursor/',
+      '**/public/'
     ],
   },
   ...fixupConfigRules(

@@ -1,10 +1,9 @@
 import {Await, useLoaderData, Link} from 'react-router';
 import type {Route} from './+types/_index';
 import {Suspense} from 'react';
-import {Image, Money} from '@shopify/hydrogen';
+import {Image} from '@shopify/hydrogen';
 import type {
   CollectionFragment,
-  RecommendedProductsQuery,
 } from 'storefrontapi.generated';
 import {ProductItem} from '~/components/ProductItem';
 import {Button} from '~/components/ui/button';
@@ -175,8 +174,8 @@ function HeroCarousel({
                     Limited Edition
                   </span>
                   <h1 className="text-7xl font-black italic leading-[0.8] uppercase tracking-tighter text-white md:text-9xl">
-                    {collection.title.split(' ').map((word: string, i: number) => (
-                      <span key={i} className="block">
+                    {collection.title.split(' ').map((word: string, i: number, arr: string[]) => (
+                      <span key={arr.slice(0, i + 1).join('-')} className="block">
                         {word}
                       </span>
                     ))}
