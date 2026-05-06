@@ -1,6 +1,6 @@
 import {Await, Link} from 'react-router';
 import {Suspense, useId} from 'react';
-import {ArrowRight} from 'lucide-react';
+import {ArrowRight, Search} from 'lucide-react';
 import type {
   CartApiQueryFragment,
   FooterQuery,
@@ -76,79 +76,95 @@ function SearchAside() {
   const queriesDatalistId = useId();
   return (
     <Aside type="search" heading="SEARCH">
-      <div className="predictive-search p-4">
-        <SearchFormPredictive>
-          {({fetchResults, goToSearch, inputRef}) => (
-            <div className="flex gap-2 mb-6">
-              <Input
-                name="q"
-                onChange={fetchResults}
-                onFocus={fetchResults}
-                placeholder="Search"
-                ref={inputRef}
-                type="search"
-                list={queriesDatalistId}
-                className="flex-1"
-              />
-              <Button onClick={goToSearch}>Search</Button>
-            </div>
-          )}
-        </SearchFormPredictive>
-
-        <SearchResultsPredictive>
-          {({items, total, term, state, closeSearch}) => {
-            const {articles, collections, pages, products, queries} = items;
-
-            if (state === 'loading' && term.current) {
-              return <div className="p-4 text-center">Loading...</div>;
-            }
-
-            if (!total) {
-              return <SearchResultsPredictive.Empty term={term} />;
-            }
-
-            return (
-              <div className="space-y-8">
-                <SearchResultsPredictive.Queries
-                  queries={queries}
-                  queriesDatalistId={queriesDatalistId}
-                />
-                <SearchResultsPredictive.Products
-                  products={products}
-                  closeSearch={closeSearch}
-                  term={term}
-                />
-                <SearchResultsPredictive.Collections
-                  collections={collections}
-                  closeSearch={closeSearch}
-                  term={term}
-                />
-                <SearchResultsPredictive.Pages
-                  pages={pages}
-                  closeSearch={closeSearch}
-                  term={term}
-                />
-                <SearchResultsPredictive.Articles
-                  articles={articles}
-                  closeSearch={closeSearch}
-                  term={term}
-                />
-                {term.current && total ? (
-                  <Link
-                    onClick={closeSearch}
-                    to={`${SEARCH_ENDPOINT}?q=${term.current}`}
-                    className="flex items-center gap-2 font-bold hover:underline"
-                  >
-                    <p>
-                      View all results for <q>{term.current}</q>
-                    </p>
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
-                ) : null}
+      <div className="predictive-search">
+        <div className="p-6 pb-0">
+          <SearchFormPredictive>
+            {({fetchResults, goToSearch, inputRef}) => (
+              <div className="flex items-center gap-2 mb-6">
+                <div className="relative flex-1 items-center">
+                  <Input
+                    name="q"
+                    onChange={fetchResults}
+                    onFocus={fetchResults}
+                    placeholder="Search products, collections..."
+                    ref={inputRef}
+                    type="search"
+                    list={queriesDatalistId}
+                    className="pl-9 h-12 text-base"
+                  />
+                </div>
+                <Button onClick={goToSearch} className="h-12 px-6 rounded">
+                  Search
+                </Button>
               </div>
-            );
-          }}
-        </SearchResultsPredictive>
+            )}
+          </SearchFormPredictive>
+        </div>
+
+        <div className="px-6 pb-12">
+          <SearchResultsPredictive>
+            {({items, total, term, state, closeSearch}) => {
+              const {articles, collections, pages, products, queries} = items;
+
+              if (state === 'loading' && term.current) {
+                return (
+                  <div className="flex flex-col items-center justify-center py-20">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black mb-4"></div>
+                    <p className="text-sm text-gray-500">
+                      Searching for products...
+                    </p>
+                  </div>
+                );
+              }
+
+              if (!total) {
+                return <SearchResultsPredictive.Empty term={term} />;
+              }
+
+              return (
+                <div className="space-y-10">
+                  <SearchResultsPredictive.Queries
+                    queries={queries}
+                    queriesDatalistId={queriesDatalistId}
+                  />
+                  <SearchResultsPredictive.Products
+                    products={products}
+                    closeSearch={closeSearch}
+                    term={term}
+                  />
+                  <SearchResultsPredictive.Collections
+                    collections={collections}
+                    closeSearch={closeSearch}
+                    term={term}
+                  />
+                  <SearchResultsPredictive.Pages
+                    pages={pages}
+                    closeSearch={closeSearch}
+                    term={term}
+                  />
+                  <SearchResultsPredictive.Articles
+                    articles={articles}
+                    closeSearch={closeSearch}
+                    term={term}
+                  />
+                  {term.current && total ? (
+                    <Link
+                      onClick={closeSearch}
+                      to={`${SEARCH_ENDPOINT}?q=${term.current}`}
+                      className="flex items-center justify-center gap-2 p-4 bg-gray-50 rounded-2xl font-bold hover:bg-black hover:text-white transition-all group"
+                    >
+                      <span>
+                        View all {total} results for{' '}
+                        <q className="italic">{term.current}</q>
+                      </span>
+                      <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                  ) : null}
+                </div>
+              );
+            }}
+          </SearchResultsPredictive>
+        </div>
       </div>
     </Aside>
   );

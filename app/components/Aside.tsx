@@ -2,12 +2,14 @@ import {
   createContext,
   type ReactNode,
   useContext,
-  useEffect,
   useState,
 } from 'react';
-import {useId} from 'react';
-import {X} from 'lucide-react';
-import {Button} from '~/components/ui/button';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from '~/components/ui/sheet';
 
 type AsideType = 'search' | 'cart' | 'mobile' | 'closed';
 type AsideContextValue = {
@@ -17,7 +19,7 @@ type AsideContextValue = {
 };
 
 /**
- * A side bar component with Overlay
+ * A side bar component with Overlay using Sheet UI
  * @example
  * ```jsx
  * <Aside type="search" heading="SEARCH">
@@ -37,50 +39,21 @@ export function Aside({
 }) {
   const {type: activeType, close} = useAside();
   const expanded = type === activeType;
-  const id = useId();
-  useEffect(() => {
-    const abortController = new AbortController();
-
-    if (expanded) {
-      document.addEventListener(
-        'keydown',
-        function handler(event: KeyboardEvent) {
-          if (event.key === 'Escape') {
-            close();
-          }
-        },
-        {signal: abortController.signal},
-      );
-    }
-    return () => abortController.abort();
-  }, [close, expanded]);
 
   return (
-    <div
-      aria-modal
-      className={`overlay ${expanded ? 'expanded' : ''}`}
-      role="dialog"
-      aria-labelledby={id}
-    >
-      <button className="close-outside" onClick={close} />
-      <aside>
-        <header className="flex items-center justify-between px-6 py-6 border-b border-black/5">
-          <h3 id={id} className="text-[12px] font-black uppercase tracking-[0.2em]">
+    <Sheet open={expanded} onOpenChange={(open) => !open && close()}>
+      <SheetContent
+        side={type === 'search' ? 'top' : 'right'}
+        className="flex flex-col p-0 w-full sm:max-w-[450px] h-full"
+      >
+        <SheetHeader className="px-6 py-6 border-b border-black/5 flex-shrink-0">
+          <SheetTitle className="text-[12px] font-black uppercase tracking-[0.2em]">
             {heading}
-          </h3>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={close}
-            aria-label="Close"
-            className="hover:rotate-90 transition-transform duration-300"
-          >
-            <X className="h-5 w-5" />
-          </Button>
-        </header>
-        <main className="h-full overflow-y-auto">{children}</main>
-      </aside>
-    </div>
+          </SheetTitle>
+        </SheetHeader>
+        <div className="flex-1 overflow-y-auto">{children}</div>
+      </SheetContent>
+    </Sheet>
   );
 }
 
