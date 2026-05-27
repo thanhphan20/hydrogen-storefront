@@ -1,6 +1,6 @@
 import {Form, useActionData, useNavigation} from 'react-router';
 import type {Route} from './+types/checkout.payment';
-import {createStripeClient} from '~/lib/stripe.server';
+import {createStripeCheckoutSession} from '~/lib/checkout.server';
 
 type CheckoutActionData = {
   error?: string;
@@ -8,8 +8,6 @@ type CheckoutActionData = {
 
 export async function action({request, context}: Route.ActionArgs) {
   try {
-    const stripe = createStripeClient(context.env.STRIPE_SECRET_KEY);
-
     // Get cart data
     const cart = await context.cart.get();
 
@@ -21,45 +19,11 @@ export async function action({request, context}: Route.ActionArgs) {
       );
     }
 
-    const lineItems = cart.lines.nodes.map((line) => {
-      const quantity = line.quantity;
-      const price = line.merchandise.price;
-      const productTitle = line.merchandise.product.title;
-      const variantTitle = line.merchandise.title;
-
-        if (quantity <= 0 || !price.amount) {
-        throw new Error('Invalid cart item quantity or price');
-      }
-
-      const unitAmountInCents = Math.round(parseFloat(price.amount) * 100);
-
-      const productName =
-        variantTitle && variantTitle !== 'Default Title'
-          ? `${productTitle} - ${variantTitle}`
-          : productTitle;
-
-      return {
-        quantity,
-        price_data: {
-          currency: price.currencyCode.toLowerCase(),
-          unit_amount: unitAmountInCents,
-          product_data: {
-            name: productName,
-          },
-        },
-      };
-    });
-
     const origin = new URL(request.url).origin;
-    const successUrl = `${origin}/checkout/success`;
-    const cancelUrl = `${origin}/checkout/payment`;
-
-    const session = await stripe.checkout.sessions.create({
-      mode: 'payment',
-      payment_method_types: ['card'],
-      line_items: lineItems,
-      success_url: successUrl,
-      cancel_url: cancelUrl,
+    const session = await createStripeCheckoutSession({
+      cart,
+      origin,
+      stripeSecretKey: context.env.STRIPE_SECRET_KEY,
     });
 
     if (!session.url) {
@@ -70,7 +34,9 @@ export async function action({request, context}: Route.ActionArgs) {
     }
 
     return Response.redirect(session.url, 303);
-  } catch {
+  } catch (error) {
+    console.error('Unable to create Stripe checkout session', error);
+
     return Response.json(
       {error: 'Payment failed to start. Please try again.'},
       {status: 500},

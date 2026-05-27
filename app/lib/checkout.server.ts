@@ -1,6 +1,38 @@
 import type {CartApiQueryFragment} from 'storefrontapi.generated';
 import {createStripeClient} from '~/lib/stripe.server';
 
+const ZERO_DECIMAL_CURRENCIES = new Set([
+  'bif',
+  'clp',
+  'djf',
+  'gnf',
+  'jpy',
+  'kmf',
+  'krw',
+  'mga',
+  'pyg',
+  'rwf',
+  'ugx',
+  'vnd',
+  'vuv',
+  'xaf',
+  'xof',
+  'xpf',
+]);
+
+function toStripeUnitAmount(amount: string, currencyCode: string) {
+  const numericAmount = Number(amount);
+  const currency = currencyCode.toLowerCase();
+
+  if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
+    throw new Error('Invalid cart item price');
+  }
+
+  return Math.round(
+    numericAmount * (ZERO_DECIMAL_CURRENCIES.has(currency) ? 1 : 100),
+  );
+}
+
 export async function createStripeCheckoutSession({
   cart,
   origin,
@@ -26,7 +58,7 @@ export async function createStripeCheckoutSession({
       throw new Error('Invalid cart item quantity or price');
     }
 
-    const unitAmountInCents = Math.round(parseFloat(price.amount) * 100);
+    const unitAmount = toStripeUnitAmount(price.amount, price.currencyCode);
     const productName =
       variantTitle && variantTitle !== 'Default Title'
         ? `${productTitle} - ${variantTitle}`
@@ -36,7 +68,7 @@ export async function createStripeCheckoutSession({
       quantity,
       price_data: {
         currency: price.currencyCode.toLowerCase(),
-        unit_amount: unitAmountInCents,
+        unit_amount: unitAmount,
         product_data: {
           name: productName,
         },
