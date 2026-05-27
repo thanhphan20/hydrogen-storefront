@@ -1,6 +1,6 @@
 import {Form, useActionData, useNavigation} from 'react-router';
 import type {Route} from './+types/checkout.payment';
-import {stripe} from '~/lib/stripe.server';
+import {createStripeClient} from '~/lib/stripe.server';
 
 type CheckoutActionData = {
   error?: string;
@@ -8,6 +8,8 @@ type CheckoutActionData = {
 
 export async function action({request, context}: Route.ActionArgs) {
   try {
+    const stripe = createStripeClient(context.env.STRIPE_SECRET_KEY);
+
     // Get cart data
     const cart = await context.cart.get();
 

@@ -1,13 +1,17 @@
 import type {CartApiQueryFragment} from 'storefrontapi.generated';
-import {stripe} from '~/lib/stripe.server';
+import {createStripeClient} from '~/lib/stripe.server';
 
 export async function createStripeCheckoutSession({
   cart,
   origin,
+  stripeSecretKey,
 }: {
   cart: CartApiQueryFragment;
   origin: string;
+  stripeSecretKey: string | undefined;
 }) {
+  const stripe = createStripeClient(stripeSecretKey);
+
   if (!cart || !cart.lines?.nodes || cart.lines.nodes.length === 0) {
     throw new Error('Cart is empty');
   }
