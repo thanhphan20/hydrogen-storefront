@@ -4,7 +4,7 @@ import {Button} from '~/components/ui/button';
 
 export default function CheckoutSuccess() {
   const [searchParams] = useSearchParams();
-  const session_id = searchParams.get('session_id');
+  const sessionId = searchParams.get('session_id');
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
@@ -16,11 +16,11 @@ export default function CheckoutSuccess() {
         <p className="mt-4 text-lg text-gray-500">
           Your order has been placed successfully. Thank you for shopping with us!
         </p>
-        
-        {session_id && (
+
+        {sessionId && (
           <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-100">
             <p className="text-sm text-gray-600">
-              Reference ID: <span className="font-mono font-medium">{session_id}</span>
+              Reference ID: <span className="font-mono font-medium">{sessionId}</span>
             </p>
           </div>
         )}
