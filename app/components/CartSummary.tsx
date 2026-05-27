@@ -2,7 +2,7 @@ import type {CartApiQueryFragment} from 'storefrontapi.generated';
 import type {CartLayout} from '~/components/CartMain';
 import {CartForm, Money, type OptimisticCart} from '@shopify/hydrogen';
 import {useEffect, useId, useRef, useState} from 'react';
-import {useFetcher} from 'react-router';
+import {useFetcher, Link} from 'react-router';
 import {Button} from '~/components/ui/button';
 import {Input} from '~/components/ui/input';
 import {Ticket, Gift, ArrowRight, X} from 'lucide-react';
@@ -48,7 +48,7 @@ export function CartSummary({cart, layout}: CartSummaryProps) {
       </div>
 
       <div className="pt-4 border-t border-black/5">
-        <CartCheckoutActions checkoutUrl={cart?.checkoutUrl} />
+        <CartCheckoutActions />
         <p className="text-[10px] text-gray-400 text-center uppercase tracking-wider mt-4 font-semibold">
           Shipping & taxes calculated at checkout
         </p>
@@ -57,15 +57,13 @@ export function CartSummary({cart, layout}: CartSummaryProps) {
   );
 }
 
-function CartCheckoutActions({checkoutUrl}: {checkoutUrl?: string}) {
-  if (!checkoutUrl) return null;
-
+function CartCheckoutActions() {
   return (
     <Button asChild className="w-full h-12 text-base font-bold uppercase tracking-widest mb-4">
-      <a href={checkoutUrl} target="_self" className="flex items-center justify-center gap-2 text-white">
+      <Link to="/checkout" className="flex items-center justify-center gap-2 text-white">
         Checkout
         <ArrowRight className="ml-2 h-4 w-4" />
-      </a>
+      </Link>
     </Button>
   );
 }
