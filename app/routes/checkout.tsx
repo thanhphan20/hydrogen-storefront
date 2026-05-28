@@ -40,7 +40,7 @@ export default function CheckoutLayout() {
         <header className="checkout-shell__header" aria-label="Checkout progress">
           <p className="checkout-shell__eyebrow">Secure checkout</p>
           <h1 className="checkout-shell__title">Complete your order</h1>
-          <ol className="checkout-stepper" role="list">
+          <ol className="checkout-stepper">
             {CHECKOUT_STEPS.map((step, index) => {
               const isCompleted = activeStepIndex > index;
               const isActive = activeStepIndex === index;

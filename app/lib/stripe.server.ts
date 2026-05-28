@@ -1,4 +1,4 @@
-import Stripe from 'stripe';
+import {Stripe} from 'stripe';
 
 export function createStripeClient(secretKey: string | undefined) {
   if (!secretKey) {

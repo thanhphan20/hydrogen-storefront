@@ -72,7 +72,7 @@ export default function CheckoutSuccess() {
                 <div className="space-y-1">
                   <h3 className="font-semibold text-gray-900">Next Steps</h3>
                   <p className="text-sm text-muted-foreground">
-                    You'll receive another email with a tracking number as soon as your items are shipped.
+                    You&apos;ll receive another email with a tracking number as soon as your items are shipped.
                   </p>
                 </div>
               </div>

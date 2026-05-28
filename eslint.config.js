@@ -26,7 +26,9 @@ export default [
     ignores: [
       '**/node_modules/',
       '**/build/',
+      '**/bin/',
       '**/dist/',
+      '**/*.d.ts',
       '**/*.graphql.d.ts',
       '**/*.graphql.ts',
       '**/*.generated.d.ts',
@@ -38,7 +40,7 @@ export default [
       '**/.react-router/',
       '**/.agent/',
       '**/.cursor/',
-      '**/public/'
+      '**/public/',
     ],
   },
   ...fixupConfigRules(
