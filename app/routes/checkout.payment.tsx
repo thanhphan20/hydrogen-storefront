@@ -1,4 +1,4 @@
-import {Form, useActionData, useNavigation} from 'react-router';
+import {Form, useActionData, useNavigation, useLoaderData} from 'react-router';
 import type {Route} from './+types/checkout.payment';
 import {createStripeCheckoutSession} from '~/lib/checkout.server';
 import {Button} from '~/components/ui/button';
@@ -8,6 +8,11 @@ import {Alert, AlertDescription} from '~/components/ui/alert';
 type CheckoutActionData = {
   error?: string;
 };
+
+export async function loader({context}: Route.LoaderArgs) {
+  const cart = await context.cart.get();
+  return {cart};
+}
 
 export async function action({request, context}: Route.ActionArgs) {
   try {
@@ -47,8 +52,17 @@ export async function action({request, context}: Route.ActionArgs) {
 
 export default function CheckoutPayment() {
   const actionData = useActionData() as CheckoutActionData | undefined;
+  const {cart} = useLoaderData<typeof loader>();
   const navigation = useNavigation();
   const isSubmitting = navigation.state === 'submitting';
+  const lines = cart?.lines?.nodes ?? [];
+  const subtotal = cart?.cost?.subtotalAmount?.amount ?? '0.00';
+  const total = cart?.cost?.totalAmount?.amount ?? '0.00';
+  const currency = cart?.cost?.totalAmount?.currencyCode ?? 'USD';
+  const money = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency,
+  });
 
   return (
     <div className="container mx-auto py-8">
@@ -113,7 +127,7 @@ export default function CheckoutPayment() {
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Subtotal</span>
-                  <span>$0.00</span>
+                  <span>{money.format(parseFloat(subtotal))}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Shipping</span>
@@ -125,7 +139,7 @@ export default function CheckoutPayment() {
                 </div>
                 <div className="border-t pt-2 flex justify-between font-medium">
                   <span>Total</span>
-                  <span>$0.00</span>
+                  <span>{money.format(parseFloat(total))}</span>
                 </div>
               </div>
               <Form method="post">
