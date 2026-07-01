@@ -1,12 +1,60 @@
-import {Link, useSearchParams} from 'react-router';
+import {Link, useLoaderData} from 'react-router';
+import type {Route} from './+types/checkout.success';
 import {CheckCircle2, ShoppingBag, ArrowRight, Mail, Truck} from 'lucide-react';
 import {Button} from '~/components/ui/button';
 import {Card, CardContent, CardHeader, CardTitle, CardFooter} from '~/components/ui/card';
 import {Badge} from '~/components/ui/badge';
+import {retrieveCheckoutSession} from '~/lib/checkout.server';
+
+const ZERO_DECIMAL_CURRENCIES = new Set([
+  'bif', 'clp', 'djf', 'gnf', 'jpy', 'kmf', 'krw', 'mga', 'pyg', 'rwf',
+  'ugx', 'vnd', 'vuv', 'xaf', 'xof', 'xpf',
+]);
+
+function formatStripeAmount(amount: number | null, currency: string | null) {
+  if (amount === null || !currency) return null;
+  const value = ZERO_DECIMAL_CURRENCIES.has(currency.toLowerCase())
+    ? amount
+    : amount / 100;
+
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: currency.toUpperCase(),
+  }).format(value);
+}
+
+export async function loader({request, context}: Route.LoaderArgs) {
+  const sessionId = new URL(request.url).searchParams.get('session_id');
+
+  if (!sessionId) {
+    return {order: null};
+  }
+
+  try {
+    const session = await retrieveCheckoutSession({
+      sessionId,
+      stripeSecretKey: context.env.STRIPE_SECRET_KEY,
+    });
+
+    if (session.status !== 'complete') {
+      return {order: null};
+    }
+
+    return {
+      order: {
+        sessionId,
+        email: session.customer_details?.email ?? null,
+        total: formatStripeAmount(session.amount_total, session.currency),
+      },
+    };
+  } catch (error) {
+    console.error('Unable to retrieve checkout session', error);
+    return {order: null};
+  }
+}
 
 export default function CheckoutSuccess() {
-  const [searchParams] = useSearchParams();
-  const sessionId = searchParams.get('session_id');
+  const {order} = useLoaderData<typeof loader>();
 
   return (
     <div className="container mx-auto px-4 py-16 sm:py-24">
@@ -40,11 +88,18 @@ export default function CheckoutSuccess() {
             </div>
           </CardHeader>
           <CardContent className="py-8 space-y-8">
-            {sessionId && (
+            {order && (
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-muted/20 border border-muted/30">
                 <div className="space-y-1">
                   <p className="text-sm font-medium text-muted-foreground">Order Reference</p>
-                  <p className="font-mono text-lg font-semibold tracking-wider">{sessionId}</p>
+                  <p className="font-mono text-lg font-semibold tracking-wider">
+                    {order.sessionId}
+                  </p>
+                  {order.total && (
+                    <p className="text-sm text-muted-foreground">
+                      Total charged: <span className="font-semibold text-foreground">{order.total}</span>
+                    </p>
+                  )}
                 </div>
                 <Badge variant="outline" className="w-fit">
                   Stripe Payment Verified
@@ -60,7 +115,9 @@ export default function CheckoutSuccess() {
                 <div className="space-y-1">
                   <h3 className="font-semibold text-gray-900">Email Confirmation</h3>
                   <p className="text-sm text-muted-foreground">
-                    A detailed confirmation email has been sent to your inbox with all your order details.
+                    {order?.email
+                      ? `A detailed confirmation has been sent to ${order.email}.`
+                      : 'A detailed confirmation email has been sent to your inbox with all your order details.'}
                   </p>
                 </div>
               </div>

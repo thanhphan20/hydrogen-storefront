@@ -23,6 +23,10 @@ export default async function handleRequest(
       checkoutDomain: context.env.PUBLIC_CHECKOUT_DOMAIN,
       storeDomain: context.env.PUBLIC_STORE_DOMAIN,
     },
+    // Required for Stripe's embedded checkout (Stripe.js + the checkout iframe).
+    scriptSrc: ["'self'", 'https://js.stripe.com'],
+    frameSrc: ["'self'", 'https://js.stripe.com', 'https://hooks.stripe.com'],
+    connectSrc: ["'self'", 'https://api.stripe.com'],
   });
 
   const {signal, markComplete} = createSafeSignal(request.signal);
