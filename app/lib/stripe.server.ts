@@ -6,6 +6,6 @@ export function createStripeClient(secretKey: string | undefined) {
   }
 
   return new Stripe(secretKey, {
-    apiVersion: '2026-04-22.dahlia',
+    apiVersion: '2026-06-24.dahlia',
   });
 }
