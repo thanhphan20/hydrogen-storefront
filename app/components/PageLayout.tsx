@@ -1,6 +1,6 @@
 import {Await, Link, useLocation} from 'react-router';
 import {Suspense, useId} from 'react';
-import {ArrowRight, Search} from 'lucide-react';
+import {ArrowRight} from 'lucide-react';
 import type {
   CartApiQueryFragment,
   FooterQuery,
@@ -45,22 +45,18 @@ export function PageLayout({
       <CartAside cart={cart} />
       <SearchAside />
       <MobileMenuAside header={header} publicStoreDomain={publicStoreDomain} />
-      {header && !isCheckout && (
-        <Header
-          header={header}
-          cart={cart}
-          isLoggedIn={isLoggedIn}
-          publicStoreDomain={publicStoreDomain}
-        />
-      )}
+      <Header
+        header={header}
+        cart={cart}
+        isLoggedIn={isLoggedIn}
+        publicStoreDomain={publicStoreDomain}
+      />
       <main className="min-h-screen">{children}</main>
-      {!isCheckout && (
-        <Footer
-          footer={footer}
-          header={header}
-          publicStoreDomain={publicStoreDomain}
-        />
-      )}
+      <Footer
+        footer={footer}
+        header={header}
+        publicStoreDomain={publicStoreDomain}
+      />
     </Aside.Provider>
   );
 }
