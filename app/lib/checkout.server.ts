@@ -81,6 +81,7 @@ export async function createEmbeddedCheckoutSession({
         variantTitle && variantTitle !== 'Default Title'
           ? `${productTitle} - ${variantTitle}`
           : productTitle;
+      const imageUrl = line.merchandise.image?.url;
 
       return {
         quantity,
@@ -89,6 +90,7 @@ export async function createEmbeddedCheckoutSession({
           unit_amount: unitAmount,
           product_data: {
             name: productName,
+            images: imageUrl ? [imageUrl] : undefined,
           },
         },
       };

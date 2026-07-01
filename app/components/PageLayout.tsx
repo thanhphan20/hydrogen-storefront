@@ -1,4 +1,4 @@
-import {Await, Link} from 'react-router';
+import {Await, Link, useLocation} from 'react-router';
 import {Suspense, useId} from 'react';
 import {ArrowRight, Search} from 'lucide-react';
 import type {
@@ -35,12 +35,17 @@ export function PageLayout({
   isLoggedIn,
   publicStoreDomain,
 }: PageLayoutProps) {
+  const {pathname} = useLocation();
+  // Checkout gets a focused, distraction-free layout: no site nav or footer
+  // competing with Stripe's embedded checkout for space and attention.
+  const isCheckout = pathname.startsWith('/checkout');
+
   return (
     <Aside.Provider>
       <CartAside cart={cart} />
       <SearchAside />
       <MobileMenuAside header={header} publicStoreDomain={publicStoreDomain} />
-      {header && (
+      {header && !isCheckout && (
         <Header
           header={header}
           cart={cart}
@@ -49,11 +54,13 @@ export function PageLayout({
         />
       )}
       <main className="min-h-screen">{children}</main>
-      <Footer
-        footer={footer}
-        header={header}
-        publicStoreDomain={publicStoreDomain}
-      />
+      {!isCheckout && (
+        <Footer
+          footer={footer}
+          header={header}
+          publicStoreDomain={publicStoreDomain}
+        />
+      )}
     </Aside.Provider>
   );
 }
