@@ -1,3 +1,4 @@
+import type {Stripe} from 'stripe';
 import type {CartApiQueryFragment} from 'storefrontapi.generated';
 import {createStripeClient} from '~/lib/stripe.server';
 
@@ -33,7 +34,21 @@ function toStripeUnitAmount(amount: string, currencyCode: string) {
   );
 }
 
-export async function createStripeCheckoutSession({
+// Flat-rate shipping options presented inside Stripe's embedded checkout UI.
+// Replace with real-time carrier rates when available.
+const SHIPPING_RATES = [
+  {name: 'Standard Shipping', amount: 5, minDays: 3, maxDays: 5},
+  {name: 'Express Shipping', amount: 15, minDays: 1, maxDays: 2},
+  {name: 'Overnight Shipping', amount: 30, minDays: 1, maxDays: 1},
+] as const;
+
+// Countries Stripe will collect a shipping address for. Adjust to match
+// the merchant's actual shipping zones.
+const SHIPPING_ALLOWED_COUNTRIES: Array<
+  Stripe.Checkout.SessionCreateParams.ShippingAddressCollection.AllowedCountry
+> = ['US', 'CA', 'GB', 'AU', 'NZ', 'DE', 'FR', 'ES', 'IT', 'NL', 'IE', 'SG', 'JP'];
+
+export async function createEmbeddedCheckoutSession({
   cart,
   origin,
   stripeSecretKey,
@@ -48,41 +63,77 @@ export async function createStripeCheckoutSession({
     throw new Error('Cart is empty');
   }
 
-  const lineItems = cart.lines.nodes.map((line) => {
-    const quantity = line.quantity;
-    const price = line.merchandise.price;
-    const productTitle = line.merchandise.product.title;
-    const variantTitle = line.merchandise.title;
+  const currency = (cart.cost?.totalAmount?.currencyCode ?? 'USD').toLowerCase();
 
-    if (quantity <= 0 || !price.amount) {
-      throw new Error('Invalid cart item quantity or price');
-    }
+  const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = cart.lines.nodes.map(
+    (line) => {
+      const quantity = line.quantity;
+      const price = line.merchandise.price;
+      const productTitle = line.merchandise.product.title;
+      const variantTitle = line.merchandise.title;
 
-    const unitAmount = toStripeUnitAmount(price.amount, price.currencyCode);
-    const productName =
-      variantTitle && variantTitle !== 'Default Title'
-        ? `${productTitle} - ${variantTitle}`
-        : productTitle;
+      if (quantity <= 0 || !price.amount) {
+        throw new Error('Invalid cart item quantity or price');
+      }
 
-    return {
-      quantity,
-      price_data: {
-        currency: price.currencyCode.toLowerCase(),
-        unit_amount: unitAmount,
-        product_data: {
-          name: productName,
+      const unitAmount = toStripeUnitAmount(price.amount, price.currencyCode);
+      const productName =
+        variantTitle && variantTitle !== 'Default Title'
+          ? `${productTitle} - ${variantTitle}`
+          : productTitle;
+      const imageUrl = line.merchandise.image?.url;
+
+      return {
+        quantity,
+        price_data: {
+          currency: price.currencyCode.toLowerCase(),
+          unit_amount: unitAmount,
+          product_data: {
+            name: productName,
+            images: imageUrl ? [imageUrl] : undefined,
+          },
+        },
+      };
+    },
+  );
+
+  const shippingOptions: Stripe.Checkout.SessionCreateParams.ShippingOption[] =
+    SHIPPING_RATES.map((rate) => ({
+      shipping_rate_data: {
+        type: 'fixed_amount',
+        display_name: rate.name,
+        fixed_amount: {
+          amount: toStripeUnitAmount(rate.amount.toString(), currency),
+          currency,
+        },
+        delivery_estimate: {
+          minimum: {unit: 'business_day', value: rate.minDays},
+          maximum: {unit: 'business_day', value: rate.maxDays},
         },
       },
-    };
-  });
+    }));
 
   const session = await stripe.checkout.sessions.create({
+    ui_mode: 'embedded_page',
     mode: 'payment',
     payment_method_types: ['card'],
     line_items: lineItems,
-    success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${origin}/checkout/payment`,
+    phone_number_collection: {enabled: true},
+    shipping_address_collection: {allowed_countries: SHIPPING_ALLOWED_COUNTRIES},
+    shipping_options: shippingOptions,
+    return_url: `${origin}/checkout/return?session_id={CHECKOUT_SESSION_ID}`,
   });
 
   return session;
+}
+
+export async function retrieveCheckoutSession({
+  sessionId,
+  stripeSecretKey,
+}: {
+  sessionId: string;
+  stripeSecretKey: string | undefined;
+}) {
+  const stripe = createStripeClient(stripeSecretKey);
+  return stripe.checkout.sessions.retrieve(sessionId);
 }

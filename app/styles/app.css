@@ -228,17 +228,32 @@ button.reset:hover:not(:has(> *)) {
 */
 .checkout-shell {
   background: #f8fafc;
-  min-height: calc(100dvh - var(--header-height));
-  padding: 1.5rem 1rem 3rem;
+  min-height: 100dvh;
+  padding: 1.25rem 1rem 2rem;
 }
 
 .checkout-shell__container {
   margin: 0 auto;
-  max-width: 72rem;
+  max-width: 74rem;
 }
 
 .checkout-shell__header {
+  align-items: center;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: space-between;
   margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+}
+
+.checkout-shell__brand {
+  color: #0f172a;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  text-transform: uppercase;
 }
 
 .checkout-shell__eyebrow {
@@ -246,163 +261,32 @@ button.reset:hover:not(:has(> *)) {
   font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.08em;
-  margin: 0 0 0.5rem;
+  margin: 0;
   text-transform: uppercase;
 }
 
-.checkout-shell__title {
-  color: #0f172a;
-  font-size: clamp(1.5rem, 1.2rem + 1vw, 2rem);
-  font-weight: 700;
-  line-height: 1.2;
-  margin: 0 0 1.25rem;
+/* Stripe's Embedded Checkout controls its own internal sizing; this
+   wrapper stays unstyled so it doesn't visually double up with Stripe's
+   own card/background and needs the full width to show its two-column
+   (order summary + payment) layout instead of collapsing the summary. */
+.checkout-embed {
+  width: 100%;
 }
 
-.checkout-stepper {
-  display: grid;
-  gap: 0.75rem;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.checkout-stepper__link {
-  align-items: center;
-  background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 0.75rem;
-  color: #475569;
-  display: flex;
-  gap: 0.625rem;
-  min-height: 3rem;
-  padding: 0.75rem 0.875rem;
-  text-decoration: none;
-  transition: border-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease, color 180ms ease;
-}
-
-.checkout-stepper__link:hover {
-  border-color: #cbd5e1;
-}
-
-.checkout-stepper__link:focus-visible {
-  outline: 2px solid #2563eb;
-  outline-offset: 2px;
-}
-
-.checkout-stepper__indicator {
-  align-items: center;
-  background: #e2e8f0;
-  border-radius: 9999px;
-  color: #1e293b;
-  display: inline-flex;
-  flex: none;
-  font-size: 0.75rem;
-  font-weight: 700;
-  height: 1.5rem;
-  justify-content: center;
-  width: 1.5rem;
-}
-
-.checkout-stepper__label {
-  font-size: 0.875rem;
-  font-weight: 600;
-}
-
-.checkout-stepper__link--active {
-  background: #eff6ff;
-  border-color: #60a5fa;
-  color: #1d4ed8;
-}
-
-.checkout-stepper__link--active .checkout-stepper__indicator {
-  background: #2563eb;
-  color: #fff;
-}
-
-.checkout-stepper__link--completed {
-  background: #f0fdf4;
-  border-color: #86efac;
-  color: #166534;
-}
-
-.checkout-stepper__link--completed .checkout-stepper__indicator {
-  background: #16a34a;
-  color: #fff;
-}
-
-.checkout-stepper__link--upcoming {
-  background: #fff;
-  color: #334155;
-}
-
-.checkout-stepper__link--disabled {
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-.checkout-shell__grid {
-  display: grid;
-  gap: 1rem;
-}
-
-.checkout-card {
+.checkout-embed__error {
   background: #fff;
   border: 1px solid #e2e8f0;
   border-radius: 1rem;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
-  padding: 1.25rem;
-}
-
-.checkout-card--summary {
-  display: grid;
-  gap: 0.75rem;
-}
-
-.checkout-card__title {
-  color: #0f172a;
-  font-size: 1.125rem;
-  font-weight: 700;
-  margin: 0;
-}
-
-.checkout-card__text {
-  color: #475569;
+  color: #b91c1c;
   font-size: 0.875rem;
   line-height: 1.6;
-  margin: 0;
-}
-
-.checkout-card__list {
-  color: #334155;
-  font-size: 0.8125rem;
-  line-height: 1.6;
-  margin: 0;
-  padding-left: 1rem;
+  padding: 2rem 1.5rem;
+  text-align: center;
 }
 
 @media (min-width: 48em) {
   .checkout-shell {
-    padding: 2rem 1.5rem 4rem;
-  }
-
-  .checkout-stepper {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-
-  .checkout-shell__grid {
-    align-items: start;
-    gap: 1.5rem;
-    grid-template-columns: minmax(0, 1fr) minmax(16rem, 20rem);
-  }
-
-  .checkout-shell__summary {
-    position: sticky;
-    top: calc(var(--header-height) + 1rem);
-  }
-
-  .checkout-card {
-    padding: 1.5rem;
+    padding: 1.5rem 1.5rem 3rem;
   }
 }
 

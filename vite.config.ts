@@ -34,6 +34,7 @@ export default defineConfig(({mode}) => ({
        * @see https://vitejs.dev/config/dep-optimization-options
        */
       include: [
+        'prop-types',
         'react-router > set-cookie-parser',
         'react-router > cookie',
         'react-router',

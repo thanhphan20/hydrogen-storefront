@@ -9,5 +9,6 @@ import '@total-typescript/ts-reset';
 declare global {
   interface Env {
     STRIPE_SECRET_KEY?: string;
+    STRIPE_PUBLIC_KEY?: string;
   }
 }
