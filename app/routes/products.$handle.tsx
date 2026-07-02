@@ -1,4 +1,4 @@
-import {redirect, useLoaderData} from 'react-router';
+import {Link, redirect, useLoaderData} from 'react-router';
 import type {Route} from './+types/products.$handle';
 import {
   getSelectedProductOptions,
@@ -95,30 +95,60 @@ export default function Product() {
     selectedOrFirstAvailableVariant: selectedVariant,
   });
 
-  const {title, descriptionHtml} = product;
+  const {title, descriptionHtml, vendor} = product;
 
   return (
-    <div className="product">
-      <ProductImage image={selectedVariant?.image} />
-      <div className="product-main">
-        <h1>{title}</h1>
-        <ProductPrice
-          price={selectedVariant?.price}
-          compareAtPrice={selectedVariant?.compareAtPrice}
-        />
-        <br />
-        <ProductForm
-          productOptions={productOptions}
-          selectedVariant={selectedVariant}
-        />
-        <br />
-        <br />
-        <p>
-          <strong>Description</strong>
-        </p>
-        <br />
-        <div dangerouslySetInnerHTML={{__html: descriptionHtml}} />
-        <br />
+    <div className="max-w-7xl mx-auto px-6 py-8">
+      <nav
+        aria-label="Breadcrumb"
+        className="mb-6 flex items-center gap-2 text-sm text-muted-foreground"
+      >
+        <Link
+          to="/"
+          prefetch="intent"
+          className="transition-colors hover:text-foreground"
+        >
+          Home
+        </Link>
+        <span aria-hidden="true">/</span>
+        <Link
+          to="/collections/all"
+          prefetch="intent"
+          className="transition-colors hover:text-foreground"
+        >
+          All products
+        </Link>
+        <span aria-hidden="true">/</span>
+        <span className="text-foreground">{title}</span>
+      </nav>
+      <div className="product">
+        <ProductImage image={selectedVariant?.image} />
+        <div className="product-main flex flex-col gap-6">
+          <div className="flex flex-col gap-2">
+            {vendor && (
+              <span className="text-sm text-muted-foreground">{vendor}</span>
+            )}
+            <h1 className="text-3xl font-semibold tracking-tight">{title}</h1>
+          </div>
+          <ProductPrice
+            className="text-xl"
+            price={selectedVariant?.price}
+            compareAtPrice={selectedVariant?.compareAtPrice}
+          />
+          <ProductForm
+            productOptions={productOptions}
+            selectedVariant={selectedVariant}
+          />
+          <div className="border-t border-border pt-6">
+            <h2 className="mb-3 text-sm font-medium text-foreground">
+              Description
+            </h2>
+            <div
+              className="text-sm leading-relaxed text-muted-foreground [&_p]:mb-3 [&_a]:underline [&_a]:underline-offset-4"
+              dangerouslySetInnerHTML={{__html: descriptionHtml}}
+            />
+          </div>
+        </div>
       </div>
       <Analytics.ProductView
         data={{

@@ -6,10 +6,7 @@ import {Link} from 'react-router';
 import {Minus, Plus, Trash2} from 'lucide-react';
 import {ProductPrice} from './ProductPrice';
 import {useAside} from './Aside';
-import type {
-  CartApiQueryFragment,
-  CartLineFragment,
-} from 'storefrontapi.generated';
+import type {CartApiQueryFragment} from 'storefrontapi.generated';
 import {Button} from '~/components/ui/button';
 
 export type CartLine = OptimisticCartLine<CartApiQueryFragment>;
@@ -37,7 +34,14 @@ export function CartLineItem({
   const childrenLabelId = `cart-line-children-${id}`;
 
   return (
-    <li key={id} className="flex flex-col py-6 border-b border-black/[0.03] last:border-0">
+    <li
+      key={id}
+      className={`flex flex-col py-6 border-b border-border last:border-0 transition-colors motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-top-2 motion-safe:duration-300 ${
+        line.isOptimistic
+          ? '-mx-2 rounded-lg bg-success/5 px-2 opacity-60 ring-1 ring-success/20'
+          : ''
+      }`}
+    >
       <div className="flex gap-4">
         {image && (
           <Link
@@ -52,7 +56,7 @@ export function CartLineItem({
               height={100}
               loading="lazy"
               width={100}
-              className="rounded-lg object-cover bg-gray-50 border border-black/5"
+              className="rounded-md object-cover bg-card border border-border"
             />
           </Link>
         )}
@@ -66,7 +70,7 @@ export function CartLineItem({
                 onClick={() => layout === 'aside' && close()}
                 className="group"
               >
-                <h3 className="font-bold text-sm leading-tight group-hover:underline decoration-1 underline-offset-2">
+                <h3 className="font-medium text-sm leading-tight group-hover:underline decoration-1 underline-offset-4">
                   {product.title}
                 </h3>
               </Link>
@@ -79,8 +83,9 @@ export function CartLineItem({
 
             <ul className="flex flex-wrap gap-x-2 gap-y-1">
               {selectedOptions.map((option) => (
-                <li key={option.name} className="text-[11px] text-gray-400 uppercase tracking-wider font-semibold">
-                  {option.name}: <span className="text-gray-600">{option.value}</span>
+                <li key={option.name} className="text-[13px] text-muted-foreground">
+                  {option.name}:{' '}
+                  <span className="text-foreground/80">{option.value}</span>
                 </li>
               ))}
             </ul>
@@ -93,7 +98,7 @@ export function CartLineItem({
       </div>
 
       {lineItemChildren ? (
-        <div className="mt-4 pl-8 border-l border-black/5 ml-12">
+        <div className="mt-4 pl-8 border-l border-border ml-12">
           <p id={childrenLabelId} className="sr-only">
             Line items with {product.title}
           </p>
@@ -126,12 +131,12 @@ function CartLineQuantity({line}: {line: CartLine}) {
 
   return (
     <div className="flex items-center gap-2">
-      <div className="flex items-center bg-gray-50 border border-black/5 rounded-full p-0.5">
+      <div className="flex items-center rounded-md border border-border p-0.5">
         <CartLineUpdateButton lines={[{id: lineId, quantity: prevQuantity}]}>
           <Button
             variant="ghost"
             size="icon"
-            className="h-7 w-7 rounded-full hover:bg-white hover:shadow-sm transition-all"
+            className="h-7 w-7 rounded-sm hover:bg-accent transition-colors"
             aria-label="Decrease quantity"
             disabled={quantity <= 1 || !!isOptimistic}
             name="decrease-quantity"
@@ -140,12 +145,14 @@ function CartLineQuantity({line}: {line: CartLine}) {
             <Minus className="h-3 w-3" />
           </Button>
         </CartLineUpdateButton>
-        <span className="w-8 text-center text-[13px] font-bold">{quantity}</span>
+        <span className="w-8 text-center text-[13px] font-medium">
+          {quantity}
+        </span>
         <CartLineUpdateButton lines={[{id: lineId, quantity: nextQuantity}]}>
           <Button
             variant="ghost"
             size="icon"
-            className="h-7 w-7 rounded-full hover:bg-white hover:shadow-sm transition-all"
+            className="h-7 w-7 rounded-sm hover:bg-accent transition-colors"
             aria-label="Increase quantity"
             name="increase-quantity"
             value={nextQuantity}
@@ -181,7 +188,7 @@ function CartLineRemoveButton({
       <button
         disabled={disabled}
         type="submit"
-        className="text-gray-400 hover:text-red-500 transition-colors p-1"
+        className="rounded-sm p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50"
         aria-label="Remove item"
       >
         <Trash2 className="h-4 w-4" />

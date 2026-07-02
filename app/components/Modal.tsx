@@ -19,14 +19,14 @@ export function Modal({
 }) {
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
-      <DialogContent className="max-w-md bg-white p-12">
+      <DialogContent className="max-w-md bg-popover p-12">
         <DialogHeader className="flex flex-row items-center justify-between">
           {heading && (
             <DialogTitle className="text-xl font-medium">{heading}</DialogTitle>
           )}
           <button
             type="button"
-            className="p-4 -m-4 transition text-primary hover:text-primary/50 cursor-pointer"
+            className="p-4 -m-4 transition text-muted-foreground hover:text-foreground cursor-pointer"
             onClick={onClose}
           >
             <X className="h-6 w-6" />

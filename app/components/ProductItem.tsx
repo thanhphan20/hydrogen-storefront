@@ -7,6 +7,7 @@ import type {
 } from 'storefrontapi.generated';
 import {useVariantUrl} from '~/lib/variants';
 import {AddToCartButton} from '~/components/AddToCartButton';
+import {Badge} from '~/components/ui/badge';
 
 export function ProductItem({
   product: baseProduct,
@@ -30,7 +31,7 @@ export function ProductItem({
         key={product.id}
         prefetch="intent"
         to={variantUrl}
-        className="relative aspect-square overflow-hidden bg-[#F4F4F4]"
+        className="relative aspect-square overflow-hidden rounded-lg border border-border bg-card transition-colors hover:border-border-strong"
       >
         {image && (
           <Image
@@ -39,24 +40,28 @@ export function ProductItem({
             data={image}
             loading={loading}
             sizes="(min-width: 45em) 400px, 100vw"
-            className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-110"
+            className="object-cover w-full h-full transition-transform duration-500 ease-out group-hover:scale-[1.03]"
           />
         )}
         <div className="absolute top-2 left-2 flex flex-col gap-1 z-10">
           {isSale && (
-            <span className="bg-[#FF4D4D] text-white text-[9px] font-black px-2 py-0.5 uppercase tracking-tighter">
+            <Badge variant="destructive" className="text-xs">
               Sale
-            </span>
+            </Badge>
           )}
-          <span className="bg-white text-black text-[9px] font-black px-2 py-0.5 uppercase tracking-tighter border border-black/10">
-            🟢 In Stock
-          </span>
+          <Badge
+            variant="outline"
+            className="gap-1.5 bg-black/60 text-xs text-foreground backdrop-blur"
+          >
+            <span className="size-1.5 rounded-full bg-success motion-safe:animate-pulse" />
+            In stock
+          </Badge>
         </div>
-        <div className="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 bg-white/10 backdrop-blur-sm hidden md:block">
+        <div className="absolute inset-x-0 bottom-0 p-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300 border-t border-border bg-black/60 backdrop-blur hidden md:block">
           {firstVariant && (
             <AddToCartButton
               lines={[{merchandiseId: firstVariant.id, quantity: 1}]}
-              className="w-full bg-black text-white text-[10px] font-bold py-2 uppercase tracking-widest hover:bg-black/80"
+              className="w-full rounded-md bg-secondary py-2 text-sm font-medium text-secondary-foreground transition-colors hover:bg-accent"
             >
               Add to cart
             </AddToCartButton>
@@ -65,20 +70,25 @@ export function ProductItem({
       </Link>
       <div className="flex flex-col gap-1 px-1">
         <Link to={variantUrl} prefetch="intent">
-          <h4 className="text-[12px] font-bold uppercase tracking-tight leading-tight hover:text-black/60 transition-colors">
+          <h4 className="text-sm font-medium leading-tight text-foreground transition-colors hover:text-muted-foreground">
             {product.title}
           </h4>
         </Link>
         <div className="flex items-center justify-between">
-          <span className="text-[11px] font-medium text-black/50 uppercase tracking-widest">
-            From <Money data={product.priceRange.minVariantPrice} as="span" className="text-black font-bold ml-1" />
+          <span className="text-sm text-muted-foreground">
+            From{' '}
+            <Money
+              data={product.priceRange.minVariantPrice}
+              as="span"
+              className="text-foreground"
+            />
           </span>
         </div>
         <div className="md:hidden mt-2">
           {firstVariant && (
             <AddToCartButton
               lines={[{merchandiseId: firstVariant.id, quantity: 1}]}
-              className="w-full bg-black text-white text-[10px] font-bold py-2 uppercase tracking-widest"
+              className="w-full rounded-md bg-secondary py-2 text-sm font-medium text-secondary-foreground transition-colors hover:bg-accent"
             >
               Add to cart
             </AddToCartButton>

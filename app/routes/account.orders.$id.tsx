@@ -84,20 +84,25 @@ export default function OrderRoute() {
   } = useLoaderData<typeof loader>();
   return (
     <div className="account-order">
-      <h2>Order {order.name}</h2>
-      <p>Placed on {new Date(order.processedAt!).toDateString()}</p>
+      <h2 className="text-2xl font-semibold tracking-tight">
+        Order {order.name}
+      </h2>
+      <p className="mt-2 text-sm text-muted-foreground">
+        Placed on {new Date(order.processedAt!).toDateString()}
+      </p>
       {order.confirmationNumber && (
-        <p>Confirmation: {order.confirmationNumber}</p>
+        <p className="text-sm text-muted-foreground">
+          Confirmation: {order.confirmationNumber}
+        </p>
       )}
-      <br />
-      <div>
-        <table>
+      <div className="mt-8 space-y-8">
+        <table className="w-full overflow-hidden rounded-lg border border-border bg-card text-sm">
           <thead>
-            <tr>
-              <th scope="col">Product</th>
-              <th scope="col">Price</th>
-              <th scope="col">Quantity</th>
-              <th scope="col">Total</th>
+            <tr className="border-b border-border text-left text-muted-foreground">
+              <th className="p-3 font-medium" scope="col">Product</th>
+              <th className="p-3 font-medium" scope="col">Price</th>
+              <th className="p-3 font-medium" scope="col">Quantity</th>
+              <th className="p-3 font-medium" scope="col">Total</th>
             </tr>
           </thead>
           <tbody>
@@ -109,14 +114,14 @@ export default function OrderRoute() {
           <tfoot>
             {((discountValue && discountValue.amount) ||
               discountPercentage) && (
-              <tr>
-                <th scope="row" colSpan={3}>
+              <tr className="border-t border-border">
+                <th className="p-3 text-left font-medium" scope="row" colSpan={3}>
                   <p>Discounts</p>
                 </th>
-                <th scope="row">
+                <th className="sr-only" scope="row">
                   <p>Discounts</p>
                 </th>
-                <td>
+                <td className="p-3">
                   {discountPercentage ? (
                     <span>-{discountPercentage}% OFF</span>
                   ) : (
@@ -125,45 +130,45 @@ export default function OrderRoute() {
                 </td>
               </tr>
             )}
-            <tr>
-              <th scope="row" colSpan={3}>
+            <tr className="border-t border-border">
+              <th className="p-3 text-left font-medium" scope="row" colSpan={3}>
                 <p>Subtotal</p>
               </th>
-              <th scope="row">
+              <th className="sr-only" scope="row">
                 <p>Subtotal</p>
               </th>
-              <td>
+              <td className="p-3">
                 <Money data={order.subtotal!} />
               </td>
             </tr>
-            <tr>
-              <th scope="row" colSpan={3}>
+            <tr className="border-t border-border">
+              <th className="p-3 text-left font-medium" scope="row" colSpan={3}>
                 Tax
               </th>
-              <th scope="row">
+              <th className="sr-only" scope="row">
                 <p>Tax</p>
               </th>
-              <td>
+              <td className="p-3">
                 <Money data={order.totalTax!} />
               </td>
             </tr>
-            <tr>
-              <th scope="row" colSpan={3}>
+            <tr className="border-t border-border">
+              <th className="p-3 text-left font-semibold" scope="row" colSpan={3}>
                 Total
               </th>
-              <th scope="row">
+              <th className="sr-only" scope="row">
                 <p>Total</p>
               </th>
-              <td>
+              <td className="p-3 font-semibold">
                 <Money data={order.totalPrice!} />
               </td>
             </tr>
           </tfoot>
         </table>
-        <div>
-          <h3>Shipping Address</h3>
+        <div className="rounded-lg border border-border bg-card p-4">
+          <h3 className="text-lg font-semibold tracking-tight">Shipping address</h3>
           {order?.shippingAddress ? (
-            <address>
+            <address className="mt-3 text-sm not-italic text-muted-foreground">
               <p>{order.shippingAddress.name}</p>
               {order.shippingAddress.formatted ? (
                 <p>{order.shippingAddress.formatted}</p>
@@ -177,18 +182,19 @@ export default function OrderRoute() {
               )}
             </address>
           ) : (
-            <p>No shipping address defined</p>
+            <p className="mt-3 text-sm text-muted-foreground">
+              No shipping address defined
+            </p>
           )}
-          <h3>Status</h3>
-          <div>
+          <h3 className="mt-6 text-lg font-semibold tracking-tight">Status</h3>
+          <div className="mt-2 text-sm text-muted-foreground">
             <p>{fulfillmentStatus}</p>
           </div>
         </div>
       </div>
-      <br />
-      <p>
+      <p className="mt-8">
         <a target="_blank" href={order.statusPageUrl} rel="noreferrer">
-          View Order Status →
+          View order status →
         </a>
       </p>
     </div>
@@ -197,25 +203,30 @@ export default function OrderRoute() {
 
 function OrderLineRow({lineItem}: {lineItem: OrderLineItemFullFragment}) {
   return (
-    <tr key={lineItem.id}>
-      <td>
-        <div>
+    <tr key={lineItem.id} className="border-b border-border last:border-b-0">
+      <td className="p-3">
+        <div className="flex items-center gap-3">
           {lineItem?.image && (
             <div>
-              <Image data={lineItem.image} width={96} height={96} />
+              <Image
+                data={lineItem.image}
+                width={96}
+                height={96}
+                className="rounded-md border border-border bg-card"
+              />
             </div>
           )}
           <div>
-            <p>{lineItem.title}</p>
-            <small>{lineItem.variantTitle}</small>
+            <p className="font-medium">{lineItem.title}</p>
+            <small className="text-muted-foreground">{lineItem.variantTitle}</small>
           </div>
         </div>
       </td>
-      <td>
+      <td className="p-3">
         <Money data={lineItem.price!} />
       </td>
-      <td>{lineItem.quantity}</td>
-      <td>
+      <td className="p-3">{lineItem.quantity}</td>
+      <td className="p-3">
         <Money data={lineItem.totalDiscount!} />
       </td>
     </tr>

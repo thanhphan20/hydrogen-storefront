@@ -1,5 +1,6 @@
 import {Link, Outlet, useRouteLoaderData} from 'react-router';
 import type {RootLoader} from '~/root';
+import {ArrowLeft, LockKeyhole} from 'lucide-react';
 
 export default function CheckoutLayout() {
   const rootData = useRouteLoaderData<RootLoader>('root');
@@ -12,7 +13,19 @@ export default function CheckoutLayout() {
           <Link to="/" className="checkout-shell__brand">
             {shopName}
           </Link>
-          <p className="checkout-shell__eyebrow">Secure checkout</p>
+          <div className="flex items-center gap-4">
+            <Link
+              className="checkout-shell__back"
+              to="/cart"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back to cart
+            </Link>
+            <p className="checkout-shell__eyebrow">
+              <LockKeyhole className="h-4 w-4" />
+              Secure checkout
+            </p>
+          </div>
         </header>
 
         <Outlet />

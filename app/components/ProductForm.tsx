@@ -44,11 +44,13 @@ export function ProductForm({
                   return (
                     <Button
                       key={option.name + name}
-                      variant={selected ? 'default' : 'outline'}
+                      variant="outline"
                       asChild
                       className={cn(
-                        'h-auto px-4 py-2',
-                        !available && 'opacity-30',
+                        'h-auto rounded-md px-4 py-2',
+                        selected &&
+                          'border-border-strong bg-secondary text-foreground',
+                        !available && 'opacity-40 line-through',
                       )}
                     >
                       <Link
@@ -66,11 +68,13 @@ export function ProductForm({
                     <Button
                       key={option.name + name}
                       type="button"
-                      variant={selected ? 'default' : 'outline'}
+                      variant="outline"
                       disabled={!exists}
                       className={cn(
-                        'h-auto px-4 py-2',
-                        !available && 'opacity-30',
+                        'h-auto rounded-md px-4 py-2',
+                        selected &&
+                          'border-border-strong bg-secondary text-foreground',
+                        !available && 'opacity-40 line-through',
                       )}
                       onClick={() => {
                         if (!selected) {
@@ -91,6 +95,7 @@ export function ProductForm({
         );
       })}
       <AddToCartButton
+        className="h-11 w-full"
         disabled={!selectedVariant || !selectedVariant.availableForSale}
         onClick={() => {
           open('cart');
@@ -129,7 +134,7 @@ function ProductOptionSwatch({
     <div className="flex items-center gap-2">
       <div
         aria-label={name}
-        className="h-4 w-4 rounded-full border border-black/10 overflow-hidden"
+        className="h-4 w-4 rounded-full border border-border overflow-hidden"
         style={{
           backgroundColor: color || 'transparent',
         }}

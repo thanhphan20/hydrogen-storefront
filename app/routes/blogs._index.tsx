@@ -54,18 +54,20 @@ export default function Blogs() {
   const {blogs} = useLoaderData<typeof loader>();
 
   return (
-    <div className="blogs">
-      <h1>Blogs</h1>
+    <div className="blogs mx-auto max-w-5xl px-6 py-12">
+      <h1 className="mb-8 text-3xl font-semibold tracking-tight">Blogs</h1>
       <div className="blogs-grid">
         <PaginatedResourceSection<BlogNode> connection={blogs}>
           {({node: blog}) => (
             <Link
-              className="blog"
+              className="blog block rounded-lg border border-border bg-card p-5 transition-colors hover:border-border-strong hover:bg-accent"
               key={blog.handle}
               prefetch="intent"
               to={`/blogs/${blog.handle}`}
             >
-              <h2>{blog.title}</h2>
+              <h2 className="text-lg font-semibold tracking-tight">
+                {blog.title}
+              </h2>
             </Link>
           )}
         </PaginatedResourceSection>

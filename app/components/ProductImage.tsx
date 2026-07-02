@@ -11,7 +11,7 @@ export function ProductImage({
     return <Skeleton className="aspect-square w-full rounded-lg" />;
   }
   return (
-    <div className="product-image overflow-hidden rounded-lg">
+    <div className="product-image overflow-hidden rounded-xl border border-border bg-card">
       <Image
         alt={image.altText || 'Product Image'}
         aspectRatio="1/1"

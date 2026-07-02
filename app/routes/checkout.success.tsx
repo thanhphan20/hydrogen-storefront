@@ -62,11 +62,11 @@ export default function CheckoutSuccess() {
         {/* Success Header Section */}
         <div className="flex flex-col items-center text-center space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
           <div className="relative">
-            <div className="absolute inset-0 bg-green-100 rounded-full animate-ping opacity-25" />
-            <CheckCircle2 className="relative h-20 w-20 text-green-500" />
+            <div className="absolute inset-0 bg-success/20 rounded-full animate-ping opacity-25" />
+            <CheckCircle2 className="relative h-20 w-20 text-success" />
           </div>
           <div className="space-y-2">
-            <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl">
+            <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
               Thank you for your purchase!
             </h1>
             <p className="text-xl text-muted-foreground">
@@ -76,11 +76,11 @@ export default function CheckoutSuccess() {
         </div>
 
         {/* Order Details Card */}
-        <Card className="overflow-hidden border-none shadow-lg bg-card/50 backdrop-blur-sm animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
-          <CardHeader className="border-b bg-muted/30 pb-6">
+        <Card className="overflow-hidden border-border bg-card animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
+          <CardHeader className="border-b border-border bg-secondary/50 pb-6">
             <div className="flex items-center justify-between">
               <CardTitle className="text-xl font-semibold flex items-center gap-2">
-                Order Information
+                Order information
               </CardTitle>
               <Badge variant="secondary" className="px-3 py-1 text-sm font-medium">
                 Confirmed
@@ -89,10 +89,10 @@ export default function CheckoutSuccess() {
           </CardHeader>
           <CardContent className="py-8 space-y-8">
             {order && (
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-muted/20 border border-muted/30">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-lg bg-secondary/50 border border-border">
                 <div className="space-y-1">
-                  <p className="text-sm font-medium text-muted-foreground">Order Reference</p>
-                  <p className="font-mono text-lg font-semibold tracking-wider">
+                  <p className="text-sm font-medium text-muted-foreground">Order reference</p>
+                  <p className="font-mono text-lg font-semibold">
                     {order.sessionId}
                   </p>
                   {order.total && (
@@ -102,18 +102,18 @@ export default function CheckoutSuccess() {
                   )}
                 </div>
                 <Badge variant="outline" className="w-fit">
-                  Stripe Payment Verified
+                  Stripe payment verified
                 </Badge>
               </div>
             )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="flex gap-4">
-                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center">
-                  <Mail className="h-6 w-6 text-blue-600" />
+                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-secondary flex items-center justify-center">
+                  <Mail className="h-6 w-6 text-muted-foreground" />
                 </div>
                 <div className="space-y-1">
-                  <h3 className="font-semibold text-gray-900">Email Confirmation</h3>
+                  <h3 className="font-semibold">Email confirmation</h3>
                   <p className="text-sm text-muted-foreground">
                     {order?.email
                       ? `A detailed confirmation has been sent to ${order.email}.`
@@ -123,11 +123,11 @@ export default function CheckoutSuccess() {
               </div>
 
               <div className="flex gap-4">
-                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-green-50 flex items-center justify-center">
-                  <Truck className="h-6 w-6 text-green-600" />
+                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-success/20 flex items-center justify-center">
+                  <Truck className="h-6 w-6 text-success" />
                 </div>
                 <div className="space-y-1">
-                  <h3 className="font-semibold text-gray-900">Next Steps</h3>
+                  <h3 className="font-semibold">Next steps</h3>
                   <p className="text-sm text-muted-foreground">
                     You&apos;ll receive another email with a tracking number as soon as your items are shipped.
                   </p>
@@ -135,17 +135,17 @@ export default function CheckoutSuccess() {
               </div>
             </div>
           </CardContent>
-          <CardFooter className="bg-muted/10 border-t py-6 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <CardFooter className="bg-secondary/30 border-t border-border py-6 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Button asChild size="lg" className="w-full sm:w-auto px-8 group">
               <Link to="/">
-                Continue Shopping
-                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                Continue shopping
+                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </Link>
             </Button>
             <Button asChild variant="outline" size="lg" className="w-full sm:w-auto px-8">
               <Link to="/account" className="flex items-center gap-2">
                 <ShoppingBag className="h-4 w-4" />
-                View Order History
+                View order history
               </Link>
             </Button>
           </CardFooter>

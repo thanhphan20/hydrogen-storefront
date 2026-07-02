@@ -1,4 +1,4 @@
-import {redirect, useLoaderData} from 'react-router';
+import {Link, redirect, useLoaderData} from 'react-router';
 import type {Route} from './+types/collections.$handle';
 import {getPaginationVariables, Analytics} from '@shopify/hydrogen';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
@@ -69,9 +69,43 @@ export default function Collection() {
   const {collection} = useLoaderData<typeof loader>();
 
   return (
-    <div className="collection">
-      <h1>{collection.title}</h1>
-      <p className="collection-description">{collection.description}</p>
+    <div className="collection max-w-7xl mx-auto px-6 py-12">
+      <nav
+        aria-label="Breadcrumb"
+        className="mb-6 flex items-center gap-2 text-sm text-muted-foreground"
+      >
+        <Link
+          to="/"
+          prefetch="intent"
+          className="transition-colors hover:text-foreground"
+        >
+          Home
+        </Link>
+        <span aria-hidden="true">/</span>
+        <Link
+          to="/collections"
+          prefetch="intent"
+          className="transition-colors hover:text-foreground"
+        >
+          Collections
+        </Link>
+        <span aria-hidden="true">/</span>
+        <span className="text-foreground">{collection.title}</span>
+      </nav>
+      <h1 className="text-3xl font-semibold tracking-tight">
+        {collection.title}
+      </h1>
+      {collection.description && (
+        <p className="collection-description mt-2 text-sm leading-relaxed text-muted-foreground">
+          {collection.description}
+        </p>
+      )}
+      <div className="mt-8 mb-8 flex items-center justify-between border-y border-border py-3">
+        <span className="text-sm text-muted-foreground">
+          {collection.products.nodes.length}{' '}
+          {collection.products.nodes.length === 1 ? 'product' : 'products'}
+        </span>
+      </div>
       <PaginatedResourceSection<ProductItemFragment>
         connection={collection.products}
         resourcesClassName="products-grid"

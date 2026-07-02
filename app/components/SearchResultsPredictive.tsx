@@ -91,8 +91,8 @@ function SearchResultsPredictiveArticles({
   return (
     <div className="space-y-4" key="articles">
       <div className="flex items-center gap-2 px-2">
-        <FileText className="h-4 w-4 text-gray-400" />
-        <h5 className="text-[11px] m-0 font-black uppercase tracking-[0.2em] text-gray-500">
+        <FileText className="h-4 w-4 text-muted-foreground" />
+        <h5 className="m-0 text-xs font-medium text-muted-foreground">
           Articles
         </h5>
       </div>
@@ -109,7 +109,7 @@ function SearchResultsPredictiveArticles({
               <Link
                 onClick={closeSearch}
                 to={articleUrl}
-                className="flex items-center gap-4 p-2 rounded-xl hover:bg-gray-50 transition-colors group"
+                className="flex items-center gap-4 p-2 rounded-lg hover:bg-accent transition-colors group"
               >
                 {article.image?.url ? (
                   <Image
@@ -117,14 +117,14 @@ function SearchResultsPredictiveArticles({
                     src={article.image.url}
                     width={48}
                     height={48}
-                    className="rounded-lg object-cover bg-gray-100 flex-shrink-0"
+                    className="rounded-md object-cover bg-card border border-border flex-shrink-0"
                   />
                 ) : (
-                  <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
-                    <FileText className="h-5 w-5 text-gray-300" />
+                  <div className="w-12 h-12 rounded-md bg-secondary border border-border flex items-center justify-center flex-shrink-0">
+                    <FileText className="h-5 w-5 text-muted-foreground" />
                   </div>
                 )}
-                <span className="text-sm font-bold group-hover:underline decoration-1 underline-offset-4">
+                <span className="text-sm font-medium group-hover:underline decoration-1 underline-offset-4">
                   {article.title}
                 </span>
               </Link>
@@ -146,8 +146,8 @@ function SearchResultsPredictiveCollections({
   return (
     <div className="space-y-4" key="collections">
       <div className="flex items-center gap-2 px-2">
-        <LayoutGrid className="h-4 w-4 text-gray-400" />
-        <h5 className="text-[11px] m-0 font-black uppercase tracking-[0.2em] text-gray-500">
+        <LayoutGrid className="h-4 w-4 text-muted-foreground" />
+        <h5 className="m-0 text-xs font-medium text-muted-foreground">
           Collections
         </h5>
       </div>
@@ -164,7 +164,7 @@ function SearchResultsPredictiveCollections({
               <Link
                 onClick={closeSearch}
                 to={collectionUrl}
-                className="flex items-center gap-4 p-2 rounded-xl hover:bg-gray-50 transition-colors group"
+                className="flex items-center gap-4 p-2 rounded-lg hover:bg-accent transition-colors group"
               >
                 {collection.image?.url ? (
                   <Image
@@ -172,14 +172,14 @@ function SearchResultsPredictiveCollections({
                     src={collection.image.url}
                     width={48}
                     height={48}
-                    className="rounded-lg object-cover bg-gray-100 flex-shrink-0"
+                    className="rounded-md object-cover bg-card border border-border flex-shrink-0"
                   />
                 ) : (
-                  <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
-                    <LayoutGrid className="h-5 w-5 text-gray-300" />
+                  <div className="w-12 h-12 rounded-md bg-secondary border border-border flex items-center justify-center flex-shrink-0">
+                    <LayoutGrid className="h-5 w-5 text-muted-foreground" />
                   </div>
                 )}
-                <span className="text-sm font-bold group-hover:underline decoration-1 underline-offset-4">
+                <span className="text-sm font-medium group-hover:underline decoration-1 underline-offset-4">
                   {collection.title}
                 </span>
               </Link>
@@ -201,8 +201,8 @@ function SearchResultsPredictivePages({
   return (
     <div className="space-y-4" key="pages">
       <div className="flex items-center gap-2 px-2">
-        <Layers className="h-4 w-4 text-gray-400" />
-        <h5 className="text-[11px] m-0 font-black uppercase tracking-[0.2em] text-gray-500">
+        <Layers className="h-4 w-4 text-muted-foreground" />
+        <h5 className="m-0 text-xs font-medium text-muted-foreground">
           Pages
         </h5>
       </div>
@@ -219,12 +219,12 @@ function SearchResultsPredictivePages({
               <Link
                 onClick={closeSearch}
                 to={pageUrl}
-                className="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 transition-colors group"
+                className="flex items-center gap-4 p-3 rounded-lg hover:bg-accent transition-colors group"
               >
-                <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
-                  <Layers className="h-5 w-5 text-gray-300" />
+                <div className="w-10 h-10 rounded-md bg-secondary border border-border flex items-center justify-center flex-shrink-0">
+                  <Layers className="h-5 w-5 text-muted-foreground" />
                 </div>
-                <span className="text-sm font-bold group-hover:underline decoration-1 underline-offset-4">
+                <span className="text-sm font-medium group-hover:underline decoration-1 underline-offset-4">
                   {page.title}
                 </span>
               </Link>
@@ -246,8 +246,8 @@ function SearchResultsPredictiveProducts({
   return (
     <div className="space-y-4" key="products">
       <div className="flex items-center gap-2 px-2">
-        <Search className="h-4 w-4 text-gray-400" />
-        <h5 className="text-[11px] m-0 font-black uppercase tracking-[0.2em] text-gray-500">
+        <Search className="h-4 w-4 text-muted-foreground" />
+        <h5 className="m-0 text-xs font-medium text-muted-foreground">
           Products
         </h5>
       </div>
@@ -266,7 +266,7 @@ function SearchResultsPredictiveProducts({
               <Link
                 to={productUrl}
                 onClick={closeSearch}
-                className="flex gap-4 p-2 rounded-2xl hover:bg-gray-50 transition-all group"
+                className="flex gap-4 p-2 rounded-lg hover:bg-accent transition-colors group"
               >
                 {image ? (
                   <Image
@@ -274,18 +274,18 @@ function SearchResultsPredictiveProducts({
                     src={image.url}
                     width={80}
                     height={80}
-                    className="rounded-xl object-cover bg-gray-50 border border-black/5 flex-shrink-0"
+                    className="rounded-lg object-cover bg-card border border-border flex-shrink-0"
                   />
                 ) : (
-                  <div className="w-20 h-20 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0">
-                    <Search className="h-8 w-8 text-gray-200" />
+                  <div className="w-20 h-20 rounded-lg bg-secondary border border-border flex items-center justify-center flex-shrink-0">
+                    <Search className="h-8 w-8 text-muted-foreground" />
                   </div>
                 )}
                 <div className="flex flex-col justify-center py-1">
-                  <h4 className="font-bold text-sm group-hover:underline decoration-1 underline-offset-4 leading-tight mb-1">
+                  <h4 className="font-medium text-sm group-hover:underline decoration-1 underline-offset-4 leading-tight mb-1">
                     {product.title}
                   </h4>
-                  <div className="text-sm text-gray-600 font-medium">
+                  <div className="text-sm text-muted-foreground">
                     {price && <Money data={price} />}
                   </div>
                 </div>
@@ -328,12 +328,12 @@ function SearchResultsPredictiveEmpty({
 
   return (
     <div className="flex flex-col items-center justify-center py-12 text-center px-6">
-      <div className="bg-gray-100 rounded-full p-4 mb-4">
-        <Search className="h-6 w-6 text-gray-400" />
+      <div className="bg-secondary rounded-full p-4 mb-4">
+        <Search className="h-6 w-6 text-muted-foreground" />
       </div>
-      <p className="text-gray-500 text-sm">
+      <p className="text-muted-foreground text-sm">
         No results found for{' '}
-        <q className="font-bold text-black italic">{term.current}</q>
+        <q className="font-medium text-foreground">{term.current}</q>
       </p>
     </div>
   );

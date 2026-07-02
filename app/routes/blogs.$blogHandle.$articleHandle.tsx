@@ -76,21 +76,28 @@ export default function Article() {
   }).format(new Date(article.publishedAt));
 
   return (
-    <div className="article">
-      <h1>
+    <article className="article mx-auto max-w-3xl px-6 py-12">
+      <h1 className="text-4xl font-semibold tracking-tight">
         {title}
-        <div>
+        <div className="mt-3 flex flex-wrap items-center gap-2 text-sm font-normal tracking-normal text-muted-foreground">
           <time dateTime={article.publishedAt}>{publishedDate}</time> &middot;{' '}
-          <address>{author?.name}</address>
+          <address className="not-italic">{author?.name}</address>
         </div>
       </h1>
 
-      {image && <Image data={image} sizes="90vw" loading="eager" />}
+      {image && (
+        <Image
+          className="my-8 rounded-lg border border-border bg-card"
+          data={image}
+          sizes="90vw"
+          loading="eager"
+        />
+      )}
       <div
         dangerouslySetInnerHTML={{__html: contentHtml}}
-        className="article"
+        className="article prose prose-invert max-w-none"
       />
-    </div>
+    </article>
   );
 }
 

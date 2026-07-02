@@ -2,6 +2,7 @@ import {redirect, useLoaderData} from 'react-router';
 import type {Route} from './+types/checkout._index';
 import {createEmbeddedCheckoutSession} from '~/lib/checkout.server';
 import {StripeEmbeddedCheckout} from '~/components/StripeEmbeddedCheckout';
+import {HEADER_QUERY} from '~/lib/fragments';
 
 export async function loader({request, context}: Route.LoaderArgs) {
   const cart = await context.cart.get();
@@ -19,11 +20,19 @@ export async function loader({request, context}: Route.LoaderArgs) {
   }
 
   const origin = new URL(request.url).origin;
+  const header = await context.storefront.query(HEADER_QUERY, {
+    cache: context.storefront.CacheLong(),
+    variables: {
+      headerMenuHandle: 'main-menu',
+    },
+  });
+  const shopName = header?.shop?.name ?? 'Store';
 
   try {
     const session = await createEmbeddedCheckoutSession({
       cart,
       origin,
+      shopName,
       stripeSecretKey: context.env.STRIPE_SECRET_KEY,
     });
 

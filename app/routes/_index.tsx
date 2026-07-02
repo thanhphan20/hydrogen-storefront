@@ -7,6 +7,7 @@ import type {
 } from 'storefrontapi.generated';
 import {ProductItem} from '~/components/ProductItem';
 import {Button} from '~/components/ui/button';
+import {Skeleton} from '~/components/ui/skeleton';
 
 export const meta: Route.MetaFunction = () => {
   return [{title: 'Hydrogen | Premium Mechanical Keyboards'}];
@@ -62,16 +63,19 @@ export default function Homepage() {
     <div className="home flex flex-col gap-24 pb-24">
       <HeroCarousel collections={carouselCollections} />
 
-      <section className="px-6">
-        <div className="flex items-end justify-between mb-10 border-b border-black pb-4">
-          <h2 className="text-4xl font-black uppercase tracking-tighter italic">
-            New Arrivals
+      <section className="px-6 reveal">
+        <div className="flex items-end justify-between mb-10 border-b border-border pb-4">
+          <h2 className="text-2xl font-semibold tracking-tight">
+            New arrivals
           </h2>
           <Link
             to="/collections/all"
-            className="text-[10px] font-bold uppercase tracking-[0.2em] hover:text-black/50 transition-colors"
+            className="group text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
-            View All —&gt;
+            View all{' '}
+            <span className="inline-block transition-transform group-hover:translate-x-0.5">
+              →
+            </span>
           </Link>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-12">
@@ -81,34 +85,30 @@ export default function Homepage() {
         </div>
       </section>
 
-      <section className="bg-black text-white py-24 px-6">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-16">
-          <div className="flex-1 flex flex-col gap-6">
-            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">
-              Featured Collection
+      <section className="px-6 reveal">
+        <div className="max-w-7xl mx-auto rounded-xl border border-border bg-card overflow-hidden flex flex-col md:flex-row items-stretch">
+          <div className="flex-1 flex flex-col justify-center gap-6 p-10 md:p-16">
+            <span className="text-sm text-muted-foreground">
+              Featured collection
             </span>
-            <h2 className="text-6xl font-black uppercase tracking-tighter leading-[0.9] italic">
+            <h2 className="text-4xl md:text-5xl font-semibold tracking-tight">
               {featuredCollection?.title}
             </h2>
-            <p className="text-sm uppercase tracking-widest text-white/60 max-w-md">
-              High-performance components engineered for enthusiasts. limited
+            <p className="text-sm text-muted-foreground leading-relaxed max-w-md">
+              High-performance components engineered for enthusiasts. Limited
               availability.
             </p>
-            <Button
-              asChild
-              variant="outline"
-              className="w-fit border-white text-white hover:bg-white hover:text-black mt-4"
-            >
+            <Button asChild variant="outline" className="w-fit mt-4">
               <Link to={`/collections/${featuredCollection?.handle}`}>
-                Shop Collection
+                Shop collection
               </Link>
             </Button>
           </div>
-          <div className="flex-1 aspect-[4/5] overflow-hidden bg-white/5">
+          <div className="flex-1 aspect-[4/5] md:aspect-auto overflow-hidden bg-secondary">
             {featuredCollection?.image && (
               <Image
                 data={featuredCollection.image}
-                className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000"
+                className="w-full h-full object-cover"
                 sizes="(min-width: 45em) 50vw, 100vw"
               />
             )}
@@ -116,12 +116,12 @@ export default function Homepage() {
         </div>
       </section>
 
-      <section className="px-6">
-        <div className="flex items-end justify-between mb-10 border-b border-black pb-4">
-          <h2 className="text-4xl font-black uppercase tracking-tighter italic">
+      <section className="px-6 reveal">
+        <div className="flex items-end justify-between mb-10 border-b border-border pb-4">
+          <h2 className="text-2xl font-semibold tracking-tight">
             Recommended
           </h2>
-          <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-black/40">
+          <span className="text-sm text-muted-foreground">
             Curated for you
           </span>
         </div>
@@ -159,7 +159,7 @@ function HeroCarousel({
       <CarouselContent className="ml-0">
         {collections.map((collection) => (
           <CarouselItem key={collection.id} className="pl-0">
-            <div className="relative h-[80vh] w-full overflow-hidden bg-gray-100">
+            <div className="relative h-[80vh] w-full overflow-hidden bg-card">
               {collection?.image && (
                 <Image
                   data={collection.image}
@@ -168,25 +168,15 @@ function HeroCarousel({
                   loading="eager"
                 />
               )}
-              <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/60 via-transparent to-transparent p-12">
+              <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black via-black/40 to-transparent p-8 md:p-12">
                 <div className="flex max-w-2xl flex-col gap-4">
-                  <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/60">
-                    Limited Edition
-                  </span>
-                  <h1 className="text-7xl font-black italic leading-[0.8] uppercase tracking-tighter text-white md:text-9xl">
-                    {collection.title.split(' ').map((word: string, i: number, arr: string[]) => (
-                      <span key={arr.slice(0, i + 1).join('-')} className="block">
-                        {word}
-                      </span>
-                    ))}
+                  <span className="text-sm text-white/70">Limited edition</span>
+                  <h1 className="text-5xl font-semibold tracking-tighter text-white md:text-7xl">
+                    {collection.title}
                   </h1>
-                  <Button
-                    asChild
-                    size="lg"
-                    className="mt-6 w-fit bg-white text-black hover:bg-white/90"
-                  >
+                  <Button asChild className="mt-6 w-fit h-11 px-6">
                     <Link to={`/collections/${collection.handle}`}>
-                      Explore Collection
+                      Explore collection
                     </Link>
                   </Button>
                 </div>
@@ -195,18 +185,22 @@ function HeroCarousel({
           </CarouselItem>
         ))}
       </CarouselContent>
-      <div className="absolute right-12 bottom-12 z-20 flex gap-4">
-        <CarouselPrevious className="static h-12 w-12 translate-y-0 rounded-none border-white/20 bg-white/10 text-white hover:bg-white hover:text-black" />
-        <CarouselNext className="static h-12 w-12 translate-y-0 rounded-none border-white/20 bg-white/10 text-white hover:bg-white hover:text-black" />
+      <div className="absolute right-8 bottom-8 z-20 flex gap-3 md:right-12 md:bottom-12">
+        <CarouselPrevious className="static size-10 translate-y-0 rounded-md border border-white/20 bg-black/40 text-white backdrop-blur transition-colors hover:bg-white hover:text-black" />
+        <CarouselNext className="static size-10 translate-y-0 rounded-md border border-white/20 bg-black/40 text-white backdrop-blur transition-colors hover:bg-white hover:text-black" />
       </div>
     </ShadcnCarousel>
   );
 }
 function RecommendedSkeleton() {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-12">
       {[1, 2, 3, 4].map((i) => (
-        <div key={i} className="aspect-square bg-gray-100 animate-pulse" />
+        <div key={i} className="flex flex-col gap-3">
+          <Skeleton className="aspect-square rounded-lg" />
+          <Skeleton className="h-4 w-3/4" />
+          <Skeleton className="h-4 w-1/3" />
+        </div>
       ))}
     </div>
   );

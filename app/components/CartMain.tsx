@@ -44,16 +44,12 @@ export function CartMain({layout, cart: originalCart}: CartMainProps) {
   const cart = useOptimisticCart(originalCart);
 
   const linesCount = Boolean(cart?.lines?.nodes?.length || 0);
-  const withDiscount =
-    cart &&
-    Boolean(cart?.discountCodes?.filter((code) => code.applicable)?.length);
-  const className = `flex flex-col h-full ${withDiscount ? 'with-discount' : ''}`;
   const cartHasItems = cart?.totalQuantity ? cart.totalQuantity > 0 : false;
   const childrenMap = getLineItemChildrenMap(cart?.lines?.nodes ?? []);
 
   return (
     <div
-      className={className}
+      className="flex flex-col h-full"
       aria-label={layout === 'page' ? 'Cart page' : 'Cart drawer'}
     >
       <CartEmpty hidden={linesCount} layout={layout} />
@@ -83,7 +79,7 @@ export function CartMain({layout, cart: originalCart}: CartMainProps) {
           </ul>
         </div>
         {cartHasItems && (
-          <div className="border-t border-black/5 bg-gray-50/50 p-6">
+          <div className="border-t border-border bg-card p-6">
             <CartSummary cart={cart} layout={layout} />
           </div>
         )}
@@ -103,11 +99,13 @@ function CartEmpty({
 
   return (
     <div className="flex flex-col items-center justify-center h-full px-6 py-20 text-center">
-      <div className="bg-gray-100 rounded-full p-6 mb-6">
-        <ShoppingBag className="h-10 w-10 text-gray-400" />
+      <div className="bg-secondary rounded-full p-6 mb-6">
+        <ShoppingBag className="h-10 w-10 text-muted-foreground" />
       </div>
-      <h2 className="text-xl font-bold mb-2">Your cart is empty</h2>
-      <p className="text-gray-500 mb-8 max-w-[250px]">
+      <h2 className="text-xl font-semibold tracking-tight mb-2">
+        Your cart is empty
+      </h2>
+      <p className="text-muted-foreground mb-8 max-w-[250px]">
         Looks like you haven&rsquo;t added anything yet, let&rsquo;s get you
         started!
       </p>

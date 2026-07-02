@@ -65,8 +65,10 @@ export default function Blog() {
   const {articles} = blog;
 
   return (
-    <div className="blog">
-      <h1>{blog.title}</h1>
+    <div className="blog mx-auto max-w-6xl px-6 py-12">
+      <h1 className="mb-8 text-3xl font-semibold tracking-tight">
+        {blog.title}
+      </h1>
       <div className="blog-grid">
         <PaginatedResourceSection<ArticleItemFragment> connection={articles}>
           {({node: article, index}) => (
@@ -96,9 +98,12 @@ function ArticleItem({
   }).format(new Date(article.publishedAt!));
   return (
     <div className="blog-article" key={article.id}>
-      <Link to={`/blogs/${article.blog.handle}/${article.handle}`}>
+      <Link
+        className="group block rounded-lg border border-border bg-card p-3 transition-colors hover:border-border-strong hover:bg-accent"
+        to={`/blogs/${article.blog.handle}/${article.handle}`}
+      >
         {article.image && (
-          <div className="blog-article-image">
+          <div className="blog-article-image overflow-hidden rounded-md border border-border bg-card">
             <Image
               alt={article.image.altText || article.title}
               aspectRatio="3/2"
@@ -108,8 +113,10 @@ function ArticleItem({
             />
           </div>
         )}
-        <h3>{article.title}</h3>
-        <small>{publishedAt}</small>
+        <h3 className="mt-4 text-lg font-semibold tracking-tight group-hover:underline underline-offset-4">
+          {article.title}
+        </h3>
+        <small className="text-sm text-muted-foreground">{publishedAt}</small>
       </Link>
     </div>
   );

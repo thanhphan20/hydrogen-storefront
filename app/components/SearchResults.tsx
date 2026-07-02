@@ -1,6 +1,9 @@
 import {Link} from 'react-router';
 import {Image, Money, Pagination} from '@shopify/hydrogen';
 import {urlWithTrackingParams, type RegularSearchReturn} from '~/lib/search';
+import {Button} from '~/components/ui/button';
+import {Skeleton} from '~/components/ui/skeleton';
+import {Search} from 'lucide-react';
 
 type SearchItems = RegularSearchReturn['result']['items'];
 type PartialSearchResult<ItemType extends keyof SearchItems> = Pick<
@@ -40,8 +43,8 @@ function SearchResultsArticles({
 
   return (
     <div className="search-result">
-      <h2>Articles</h2>
-      <div>
+      <h2 className="text-xl font-semibold tracking-tight">Articles</h2>
+      <div className="space-y-2">
         {articles?.nodes?.map((article) => {
           const articleUrl = urlWithTrackingParams({
             baseUrl: `/blogs/${article.handle}`,
@@ -70,8 +73,8 @@ function SearchResultsPages({term, pages}: PartialSearchResult<'pages'>) {
 
   return (
     <div className="search-result">
-      <h2>Pages</h2>
-      <div>
+      <h2 className="text-xl font-semibold tracking-tight">Pages</h2>
+      <div className="space-y-2">
         {pages?.nodes?.map((page) => {
           const pageUrl = urlWithTrackingParams({
             baseUrl: `/pages/${page.handle}`,
@@ -103,7 +106,7 @@ function SearchResultsProducts({
 
   return (
     <div className="search-result">
-      <h2>Products</h2>
+      <h2 className="text-xl font-semibold tracking-tight">Products</h2>
       <Pagination connection={products}>
         {({nodes, isLoading, NextLink, PreviousLink}) => {
           const ItemsMarkup = nodes.map((product) => {
@@ -120,11 +123,18 @@ function SearchResultsProducts({
               <div className="search-results-item" key={product.id}>
                 <Link prefetch="intent" to={productUrl}>
                   {image && (
-                    <Image data={image} alt={product.title} width={50} />
+                    <Image
+                      data={image}
+                      alt={product.title}
+                      width={64}
+                      className="rounded-md border border-border bg-card"
+                    />
                   )}
                   <div>
-                    <p>{product.title}</p>
-                    <small>{price && <Money data={price} />}</small>
+                    <p className="text-sm font-medium">{product.title}</p>
+                    <small className="text-sm text-muted-foreground">
+                      {price && <Money data={price} />}
+                    </small>
                   </div>
                 </Link>
               </div>
@@ -132,20 +142,23 @@ function SearchResultsProducts({
           });
 
           return (
-            <div>
-              <div>
-                <PreviousLink>
-                  {isLoading ? 'Loading...' : <span>↑ Load previous</span>}
-                </PreviousLink>
+            <div className="space-y-4">
+              <div className="flex justify-center">
+                <Button asChild variant="outline" size="sm">
+                  <PreviousLink>
+                    {isLoading ? 'Loading...' : <span>Load previous</span>}
+                  </PreviousLink>
+                </Button>
               </div>
-              <div>
-                {ItemsMarkup}
-                <br />
+              <div className="space-y-2">
+                {isLoading ? <SearchResultsSkeleton /> : ItemsMarkup}
               </div>
-              <div>
-                <NextLink>
-                  {isLoading ? 'Loading...' : <span>Load more ↓</span>}
-                </NextLink>
+              <div className="flex justify-center">
+                <Button asChild variant="outline" size="sm">
+                  <NextLink>
+                    {isLoading ? 'Loading...' : <span>Load more</span>}
+                  </NextLink>
+                </Button>
               </div>
             </div>
           );
@@ -156,6 +169,47 @@ function SearchResultsProducts({
   );
 }
 
-function SearchResultsEmpty() {
-  return <p>No results, try a different search.</p>;
+function SearchResultsSkeleton() {
+  const skeletonRows = ['first', 'second', 'third', 'fourth'];
+
+  return (
+    <div className="space-y-2" aria-hidden="true">
+      {skeletonRows.map((row) => (
+        <div
+          key={row}
+          className="flex items-center gap-4 rounded-lg border border-border bg-card p-3"
+        >
+          <Skeleton className="h-16 w-16 rounded-md" />
+          <div className="flex-1 space-y-2">
+            <Skeleton className="h-4 w-2/3" />
+            <Skeleton className="h-3 w-24" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function SearchResultsEmpty({term}: {term?: string}) {
+  return (
+    <div className="flex flex-col items-center justify-center rounded-lg border border-border bg-card px-6 py-16 text-center">
+      <div className="mb-4 rounded-full bg-secondary p-4">
+        <Search className="h-6 w-6 text-muted-foreground" />
+      </div>
+      <h2 className="text-xl font-semibold tracking-tight">
+        {term ? (
+          <>
+            No results for <q>{term}</q>
+          </>
+        ) : (
+          'Search the store'
+        )}
+      </h2>
+      <p className="mt-2 max-w-sm text-sm text-muted-foreground">
+        {term
+          ? 'Try a different product name, collection, or keyword.'
+          : 'Enter a product, collection, article, or page name to start.'}
+      </p>
+    </div>
+  );
 }
