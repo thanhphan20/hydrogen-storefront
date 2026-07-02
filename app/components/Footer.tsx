@@ -1,6 +1,8 @@
 import {Suspense} from 'react';
 import {Await, NavLink} from 'react-router';
 import type {FooterQuery, HeaderQuery} from 'storefrontapi.generated';
+import {Button} from '~/components/ui/button';
+import {Input} from '~/components/ui/input';
 
 interface FooterProps {
   footer: Promise<FooterQuery | null>;
@@ -17,13 +19,13 @@ export function Footer({
     <Suspense>
       <Await resolve={footerPromise}>
         {(footer) => (
-          <footer className="bg-black text-white pt-16 pb-8 px-6 mt-20">
+          <footer className="bg-background border-t border-border pt-16 pb-8 px-6 mt-20">
             <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
               <div className="flex flex-col gap-4">
-                <h3 className="text-xl font-black italic tracking-tighter uppercase">
+                <h3 className="text-lg font-semibold tracking-tight text-foreground">
                   {header.shop.name}
                 </h3>
-                <p className="text-[11px] text-white/60 leading-relaxed uppercase tracking-widest">
+                <p className="text-sm text-muted-foreground leading-relaxed">
                   Premium mechanical keyboard components for enthusiasts
                   worldwide.
                 </p>
@@ -36,28 +38,24 @@ export function Footer({
                 />
               )}
               <div className="flex flex-col gap-4">
-                <h4 className="text-[12px] font-bold uppercase tracking-[0.2em]">
-                  Contact
-                </h4>
-                <p className="text-[11px] text-white/60 uppercase tracking-widest">
-                  Support@kbdfans.com
+                <h4 className="text-sm font-medium text-foreground">Contact</h4>
+                <p className="text-sm text-muted-foreground">
+                  support@kbdfans.com
                 </p>
               </div>
               <div className="flex flex-col gap-4">
-                <h4 className="text-[12px] font-bold uppercase tracking-[0.2em]">
+                <h4 className="text-sm font-medium text-foreground">
                   Newsletter
                 </h4>
-                <div className="flex border-b border-white/20 pb-2">
-                  <input
-                    type="email"
-                    placeholder="EMAIL ADDRESS"
-                    className="bg-transparent text-[10px] w-full outline-none"
-                  />
-                  <button className="text-[10px] font-bold">SUBSCRIBE</button>
+                <div className="flex gap-2">
+                  <Input type="email" placeholder="Email address" />
+                  <Button variant="secondary" size="default">
+                    Subscribe
+                  </Button>
                 </div>
               </div>
             </div>
-            <div className="max-w-7xl mx-auto mt-16 pt-8 border-t border-white/10 flex justify-between items-center text-[9px] uppercase tracking-[0.3em] text-white/40">
+            <div className="max-w-7xl mx-auto mt-16 pt-8 border-t border-border flex justify-between items-center text-xs text-muted-foreground">
               <p>
                 © {new Date().getFullYear()} {header.shop.name}. All rights
                 reserved.
@@ -87,9 +85,7 @@ function FooterMenu({
 }) {
   return (
     <nav className="flex flex-col gap-4" role="navigation">
-      <h4 className="text-[12px] font-bold uppercase tracking-[0.2em]">
-        Quick Links
-      </h4>
+      <h4 className="text-sm font-medium text-foreground">Quick links</h4>
       <div className="flex flex-col gap-2">
         {(menu || FALLBACK_FOOTER_MENU).items.map((item) => {
           if (!item.url) return null;
@@ -124,7 +120,7 @@ function FooterMenu({
               key={item.id}
               rel="noopener noreferrer"
               target="_blank"
-              className="text-[11px] text-white/60 hover:text-white uppercase tracking-widest transition-colors"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               {item.title}
             </a>
@@ -133,9 +129,14 @@ function FooterMenu({
               end
               key={item.id}
               prefetch="intent"
-              style={activeLinkStyle}
               to={url}
-              className="text-[11px] text-white/60 hover:text-white uppercase tracking-widest transition-colors"
+              className={({isActive}) =>
+                `text-sm transition-colors ${
+                  isActive
+                    ? 'text-foreground'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`
+              }
             >
               {item.title}
             </NavLink>
@@ -187,16 +188,3 @@ const FALLBACK_FOOTER_MENU = {
     },
   ],
 };
-
-function activeLinkStyle({
-  isActive,
-  isPending,
-}: {
-  isActive: boolean;
-  isPending: boolean;
-}) {
-  return {
-    fontWeight: isActive ? 'bold' : undefined,
-    color: isPending ? 'grey' : 'white',
-  };
-}

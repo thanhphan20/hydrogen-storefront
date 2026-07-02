@@ -1,11 +1,12 @@
 import type {CartApiQueryFragment} from 'storefrontapi.generated';
 import type {CartLayout} from '~/components/CartMain';
 import {CartForm, Money, type OptimisticCart} from '@shopify/hydrogen';
-import {useEffect, useId, useRef, useState} from 'react';
+import {useEffect, useId, useRef} from 'react';
 import {useFetcher, Link} from 'react-router';
 import {Button} from '~/components/ui/button';
 import {Input} from '~/components/ui/input';
 import {Ticket, Gift, ArrowRight, X} from 'lucide-react';
+import {useAside} from '~/components/Aside';
 
 type CartSummaryProps = {
   cart: OptimisticCart<CartApiQueryFragment | null>;
@@ -23,8 +24,8 @@ export function CartSummary({cart, layout}: CartSummaryProps) {
     <div aria-labelledby={summaryId} className="space-y-6">
       <div className="space-y-4">
         <div className="flex justify-between items-center">
-          <span className="text-gray-500">Subtotal</span>
-          <span className="font-bold text-lg">
+          <span className="text-sm text-muted-foreground">Subtotal</span>
+          <span className="font-medium text-lg">
             {cart?.cost?.subtotalAmount?.amount ? (
               <Money data={cart?.cost?.subtotalAmount} />
             ) : (
@@ -47,24 +48,38 @@ export function CartSummary({cart, layout}: CartSummaryProps) {
         </div>
       </div>
 
-      <div className="pt-4 border-t border-black/5">
-        <CartCheckoutActions />
-        <p className="text-[10px] text-gray-400 text-center uppercase tracking-wider mt-4 font-semibold">
-          Shipping & taxes calculated at checkout
+      <div className="pt-4 border-t border-border">
+        <CartCheckoutActions layout={layout} />
+        <p className="text-xs text-muted-foreground text-center mt-4">
+          Shipping and taxes calculated at checkout
         </p>
       </div>
     </div>
   );
 }
 
-function CartCheckoutActions() {
+function CartCheckoutActions({layout}: {layout: CartLayout}) {
+  const {close} = useAside();
+
   return (
-    <Button asChild className="w-full h-12 text-base font-bold uppercase tracking-widest mb-4">
-      <Link to="/checkout" className="flex items-center justify-center gap-2 text-white">
-        Checkout
-        <ArrowRight className="ml-2 h-4 w-4" />
-      </Link>
-    </Button>
+    <div className="space-y-2">
+      <Button asChild className="group w-full h-11 text-sm">
+        <Link to="/checkout" className="flex items-center justify-center gap-2">
+          Checkout
+          <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+        </Link>
+      </Button>
+      {layout === 'aside' && (
+        <Button
+          type="button"
+          variant="ghost"
+          className="w-full h-10 text-sm"
+          onClick={close}
+        >
+          Continue shopping
+        </Button>
+      )}
+    </div>
   );
 }
 
@@ -89,10 +104,10 @@ function CartDiscounts({
         <div className="flex flex-wrap gap-2">
           {codes.map((code) => (
             <UpdateDiscountForm key={code} discountCodes={[]}>
-              <div className="flex items-center gap-1.5 bg-green-50 text-green-700 px-2.5 py-1 rounded-full text-xs font-bold border border-green-100">
+              <div className="flex items-center gap-1.5 bg-success/10 text-success px-2.5 py-1 rounded-full text-xs font-medium border border-success/40">
                 <Ticket className="h-3 w-3" />
                 <span>{code}</span>
-                <button type="submit" className="ml-1 hover:text-green-900 transition-colors">
+                <button type="submit" className="ml-1 hover:text-foreground transition-colors">
                   <X className="h-3 w-3" />
                 </button>
               </div>
@@ -113,7 +128,7 @@ function CartDiscounts({
               className="pl-9 h-10 text-sm"
             />
           </div>
-          <Button type="submit" variant="outline" className="h-10 px-4 text-xs font-bold uppercase tracking-wider">
+          <Button type="submit" variant="outline" className="h-10 px-4 text-sm">
             Apply
           </Button>
         </div>
@@ -165,15 +180,15 @@ function CartGiftCard({
       {giftCardCodes && giftCardCodes.length > 0 && (
         <div className="space-y-2">
           {giftCardCodes.map((giftCard) => (
-            <div key={giftCard.id} className="flex justify-between items-center bg-blue-50 text-blue-700 px-3 py-2 rounded-lg text-xs font-bold border border-blue-100">
+            <div key={giftCard.id} className="flex justify-between items-center bg-secondary text-secondary-foreground px-3 py-2 rounded-lg text-xs font-medium border border-border">
               <div className="flex items-center gap-2">
                 <Gift className="h-4 w-4" />
                 <span>Ending in {giftCard.lastCharacters}</span>
-                <span className="text-blue-500">•</span>
+                <span className="text-muted-foreground">•</span>
                 <Money data={giftCard.amountUsed} />
               </div>
               <RemoveGiftCardForm giftCardId={giftCard.id}>
-                <button type="submit" className="hover:text-blue-900 transition-colors">
+                <button type="submit" className="text-muted-foreground hover:text-foreground transition-colors">
                   <X className="h-4 w-4" />
                 </button>
               </RemoveGiftCardForm>
@@ -194,10 +209,10 @@ function CartGiftCard({
               className="pl-9 h-10 text-sm"
             />
           </div>
-          <Button 
-            type="submit" 
-            variant="outline" 
-            className="h-10 px-4 text-xs font-bold uppercase tracking-wider"
+          <Button
+            type="submit"
+            variant="outline"
+            className="h-10 px-4 text-sm"
             disabled={giftCardAddFetcher.state !== 'idle'}
           >
             Add

@@ -46,8 +46,10 @@ export default function Collections() {
   const {collections} = useLoaderData<typeof loader>();
 
   return (
-    <div className="collections">
-      <h1>Collections</h1>
+    <div className="collections max-w-7xl mx-auto px-6 py-12">
+      <h1 className="mb-8 border-b border-border pb-4 text-3xl font-semibold tracking-tight">
+        Collections
+      </h1>
       <PaginatedResourceSection<CollectionFragment>
         connection={collections}
         resourcesClassName="collections-grid"
@@ -73,21 +75,26 @@ function CollectionItem({
 }) {
   return (
     <Link
-      className="collection-item"
+      className="collection-item group flex flex-col gap-3"
       key={collection.id}
       to={`/collections/${collection.handle}`}
       prefetch="intent"
     >
-      {collection?.image && (
-        <Image
-          alt={collection.image.altText || collection.title}
-          aspectRatio="1/1"
-          data={collection.image}
-          loading={index < 3 ? 'eager' : undefined}
-          sizes="(min-width: 45em) 400px, 100vw"
-        />
-      )}
-      <h5>{collection.title}</h5>
+      <div className="overflow-hidden rounded-lg border border-border bg-card transition-colors group-hover:border-border-strong">
+        {collection?.image && (
+          <Image
+            alt={collection.image.altText || collection.title}
+            aspectRatio="1/1"
+            data={collection.image}
+            loading={index < 3 ? 'eager' : undefined}
+            sizes="(min-width: 45em) 400px, 100vw"
+            className="w-full transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+          />
+        )}
+      </div>
+      <h5 className="text-sm font-medium text-foreground transition-colors group-hover:text-muted-foreground">
+        {collection.title}
+      </h5>
     </Link>
   );
 }

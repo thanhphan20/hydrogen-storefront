@@ -19,7 +19,7 @@ export function Carousel<T>({slides, renderSlide, getKey}: CarouselProps<T>) {
         <CarouselContent>
           {slides.map((slide, index) => (
             <CarouselItem key={getKey(slide, index)}>
-              <div className="flex h-[24rem] items-center justify-center bg-gray-100">
+              <div className="flex h-[24rem] items-center justify-center rounded-lg border border-border bg-card">
                 {renderSlide(slide, index)}
               </div>
             </CarouselItem>

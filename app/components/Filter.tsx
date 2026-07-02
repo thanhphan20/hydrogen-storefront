@@ -118,7 +118,7 @@ export function FiltersDrawer({
         </div>
       ) : null}
 
-      <h4 className="pb-4 font-bold">Filter By</h4>
+      <h4 className="pb-4 text-sm font-medium">Filter by</h4>
       <Accordion type="multiple" className="w-full">
         {filters.map((filter: Filter) => (
           <AccordionItem key={filter.id} value={filter.id}>
@@ -146,12 +146,12 @@ function AppliedFilters({filters = []}: {filters: AppliedFilter[]}) {
   const location = useLocation();
   return (
     <>
-      <h4 className="pb-4 font-bold">Applied filters</h4>
+      <h4 className="pb-4 text-sm font-medium">Applied filters</h4>
       <div className="flex flex-wrap gap-2">
         {filters.map((filter: AppliedFilter) => (
           <Link
             to={getAppliedFilterLink(filter, params, location)}
-            className="flex items-center gap-1 rounded-full border px-3 py-1 text-sm hover:bg-gray-100"
+            className="flex items-center gap-1 rounded-full border border-border px-3 py-1 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
             key={`${filter.label}-${JSON.stringify(filter.filter)}`}
           >
             <span>{filter.label}</span>
@@ -211,7 +211,7 @@ function PriceRangeFilter({max, min}: {max?: number; min?: number}) {
   return (
     <div className="flex flex-col gap-4 py-2">
       <div className="flex flex-col gap-2">
-        <span className="text-xs uppercase text-gray-500">From</span>
+        <span className="text-xs text-muted-foreground">From</span>
         <Input
           name="minPrice"
           type="number"
@@ -221,7 +221,7 @@ function PriceRangeFilter({max, min}: {max?: number; min?: number}) {
         />
       </div>
       <div className="flex flex-col gap-2">
-        <span className="text-xs uppercase text-gray-500">To</span>
+        <span className="text-xs text-muted-foreground">To</span>
         <Input
           name="maxPrice"
           type="number"
@@ -250,18 +250,18 @@ export default function SortMenu() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="flex items-center gap-2">
-          <span className="font-medium text-gray-500">Sort by:</span>
+          <span className="font-medium text-muted-foreground">Sort by:</span>
           <span>{(activeItem || items[0]).label}</span>
           <ChevronDown className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-48 bg-white">
+      <DropdownMenuContent align="end" className="w-48">
         {items.map((item) => (
           <DropdownMenuItem key={item.key} asChild>
             <Link
               to={getSortLink(item.key, params, location)}
               className={`w-full cursor-pointer ${
-                activeItem?.key === item.key ? 'font-bold' : ''
+                activeItem?.key === item.key ? 'font-medium text-foreground' : ''
               }`}
             >
               {item.label}

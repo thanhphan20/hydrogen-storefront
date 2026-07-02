@@ -51,10 +51,12 @@ const SHIPPING_ALLOWED_COUNTRIES: Array<
 export async function createEmbeddedCheckoutSession({
   cart,
   origin,
+  shopName,
   stripeSecretKey,
 }: {
   cart: CartApiQueryFragment;
   origin: string;
+  shopName: string;
   stripeSecretKey: string | undefined;
 }) {
   const stripe = createStripeClient(stripeSecretKey);
@@ -113,7 +115,7 @@ export async function createEmbeddedCheckoutSession({
       },
     }));
 
-  const session = await stripe.checkout.sessions.create({
+  const sessionParams: Stripe.Checkout.SessionCreateParams = {
     ui_mode: 'embedded_page',
     mode: 'payment',
     payment_method_types: ['card'],
@@ -122,9 +124,40 @@ export async function createEmbeddedCheckoutSession({
     shipping_address_collection: {allowed_countries: SHIPPING_ALLOWED_COUNTRIES},
     shipping_options: shippingOptions,
     return_url: `${origin}/checkout/return?session_id={CHECKOUT_SESSION_ID}`,
-  });
+    branding_settings: {
+      background_color: '#0a0a0a',
+      button_color: '#ffffff',
+      border_style: 'rounded',
+      font_family: 'inter',
+      display_name: shopName,
+    },
+  };
 
-  return session;
+  try {
+    return await stripe.checkout.sessions.create(sessionParams);
+  } catch (error) {
+    if (!isBrandingSettingsError(error)) {
+      throw error;
+    }
+
+    console.warn(
+      'Stripe rejected checkout branding_settings; retrying without branding.',
+      error,
+    );
+    const retryParams = {...sessionParams};
+    delete retryParams.branding_settings;
+    return await stripe.checkout.sessions.create(retryParams);
+  }
+}
+
+function isBrandingSettingsError(error: unknown) {
+  if (!error || typeof error !== 'object') return false;
+
+  const stripeError = error as {param?: string; message?: string};
+  return (
+    stripeError.param === 'branding_settings' ||
+    Boolean(stripeError.message?.includes('branding_settings'))
+  );
 }
 
 export async function retrieveCheckoutSession({

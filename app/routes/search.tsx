@@ -3,6 +3,8 @@ import type {Route} from './+types/search';
 import {getPaginationVariables, Analytics} from '@shopify/hydrogen';
 import {SearchForm} from '~/components/SearchForm';
 import {SearchResults} from '~/components/SearchResults';
+import {Button} from '~/components/ui/button';
+import {Input} from '~/components/ui/input';
 import {
   type RegularSearchReturn,
   type PredictiveSearchReturn,
@@ -12,6 +14,7 @@ import type {
   RegularSearchQuery,
   PredictiveSearchQuery,
 } from 'storefrontapi.generated';
+import {AlertCircle} from 'lucide-react';
 
 export const meta: Route.MetaFunction = () => {
   return [{title: `Hydrogen | Search`}];
@@ -41,26 +44,38 @@ export default function SearchPage() {
   if (type === 'predictive') return null;
 
   return (
-    <div className="search">
-      <h1>Search</h1>
-      <SearchForm>
+    <div className="search mx-auto max-w-4xl px-6 py-12">
+      <div className="mb-8 border-b border-border pb-6">
+        <h1 className="text-3xl font-semibold tracking-tight">Search</h1>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Find products, collections, articles, and pages.
+        </p>
+      </div>
+      <SearchForm className="mb-8 flex gap-2">
         {({inputRef}) => (
           <>
-            <input
+            <Input
               defaultValue={term}
               name="q"
               placeholder="Search…"
               ref={inputRef}
               type="search"
+              className="h-11"
             />
-            &nbsp;
-            <button type="submit">Search</button>
+            <Button type="submit" className="h-11 px-5">
+              Search
+            </Button>
           </>
         )}
       </SearchForm>
-      {error && <p style={{color: 'red'}}>{error}</p>}
+      {error && (
+        <div className="mb-6 flex items-start gap-3 rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
+          <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0" />
+          <p>{error}</p>
+        </div>
+      )}
       {!term || !result?.total ? (
-        <SearchResults.Empty />
+        <SearchResults.Empty term={term} />
       ) : (
         <SearchResults result={result} term={term}>
           {({articles, pages, products, term}) => (

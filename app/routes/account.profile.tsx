@@ -9,6 +9,8 @@ import {
   useOutletContext,
 } from 'react-router';
 import type {Route} from './+types/account.profile';
+import {Button} from '~/components/ui/button';
+import {Input} from '~/components/ui/input';
 
 export type ActionResponse = {
   error: string | null;
@@ -87,13 +89,16 @@ export default function AccountProfile() {
 
   return (
     <div className="account-profile">
-      <h2>My profile</h2>
-      <br />
-      <Form method="PUT">
-        <legend>Personal information</legend>
-        <fieldset>
-          <label htmlFor="firstName">First name</label>
-          <input
+      <h2 className="mb-6 text-2xl font-semibold tracking-tight">My profile</h2>
+      <Form method="PUT" className="max-w-xl space-y-6">
+        <fieldset className="space-y-4 rounded-lg border border-border bg-card p-4">
+          <legend className="px-1 text-sm font-medium text-muted-foreground">
+            Personal information
+          </legend>
+          <label className="block text-sm font-medium" htmlFor="firstName">
+            First name
+          </label>
+          <Input
             id="firstName"
             name="firstName"
             type="text"
@@ -103,8 +108,10 @@ export default function AccountProfile() {
             defaultValue={customer.firstName ?? ''}
             minLength={2}
           />
-          <label htmlFor="lastName">Last name</label>
-          <input
+          <label className="block text-sm font-medium" htmlFor="lastName">
+            Last name
+          </label>
+          <Input
             id="lastName"
             name="lastName"
             type="text"
@@ -116,17 +123,15 @@ export default function AccountProfile() {
           />
         </fieldset>
         {action?.error ? (
-          <p>
-            <mark>
-              <small>{action.error}</small>
-            </mark>
+          <p className="rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
+            {action.error}
           </p>
         ) : (
-          <br />
+          null
         )}
-        <button type="submit" disabled={state !== 'idle'}>
+        <Button type="submit" disabled={state !== 'idle'}>
           {state !== 'idle' ? 'Updating' : 'Update'}
-        </button>
+        </Button>
       </Form>
     </div>
   );

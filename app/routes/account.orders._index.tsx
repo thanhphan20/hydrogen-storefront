@@ -23,6 +23,8 @@ import type {
   OrderItemFragment,
 } from 'customer-accountapi.generated';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
+import {Button} from '~/components/ui/button';
+import {Input} from '~/components/ui/input';
 
 type OrdersLoaderData = {
   customer: CustomerOrdersFragment;
@@ -95,22 +97,26 @@ function OrdersTable({
 
 function EmptyOrders({hasFilters = false}: {hasFilters?: boolean}) {
   return (
-    <div>
+    <div className="rounded-lg border border-border bg-card p-8 text-center">
       {hasFilters ? (
         <>
-          <p>No orders found matching your search.</p>
-          <br />
-          <p>
-            <Link to="/account/orders">Clear filters →</Link>
+          <p className="text-lg font-medium">No orders found</p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Try another order or confirmation number.
           </p>
+          <Button asChild variant="outline" className="mt-6">
+            <Link to="/account/orders">Clear filters</Link>
+          </Button>
         </>
       ) : (
         <>
-          <p>You haven&apos;t placed any orders yet.</p>
-          <br />
-          <p>
-            <Link to="/collections">Start Shopping →</Link>
+          <p className="text-lg font-medium">You haven&apos;t placed any orders yet.</p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Orders will appear here after checkout.
           </p>
+          <Button asChild className="mt-6">
+            <Link to="/collections">Start shopping</Link>
+          </Button>
         </>
       )}
     </div>
@@ -157,10 +163,10 @@ function OrderSearchForm({
       aria-label="Search orders"
     >
       <fieldset className="order-search-fieldset">
-        <legend className="order-search-legend">Filter Orders</legend>
+        <legend className="order-search-legend">Filter orders</legend>
 
         <div className="order-search-inputs">
-          <input
+          <Input
             type="search"
             name={ORDER_FILTER_FIELDS.NAME}
             placeholder="Order #"
@@ -168,7 +174,7 @@ function OrderSearchForm({
             defaultValue={currentFilters.name || ''}
             className="order-search-input"
           />
-          <input
+          <Input
             type="search"
             name={ORDER_FILTER_FIELDS.CONFIRMATION_NUMBER}
             placeholder="Confirmation #"
@@ -179,12 +185,13 @@ function OrderSearchForm({
         </div>
 
         <div className="order-search-buttons">
-          <button type="submit" disabled={isSearching}>
+          <Button type="submit" disabled={isSearching}>
             {isSearching ? 'Searching' : 'Search'}
-          </button>
+          </Button>
           {hasFilters && (
-            <button
+            <Button
               type="button"
+              variant="ghost"
               disabled={isSearching}
               onClick={() => {
                 setSearchParams(new URLSearchParams());
@@ -192,7 +199,7 @@ function OrderSearchForm({
               }}
             >
               Clear
-            </button>
+            </Button>
           )}
         </div>
       </fieldset>
@@ -204,20 +211,32 @@ function OrderItem({order}: {order: OrderItemFragment}) {
   const fulfillmentStatus = flattenConnection(order.fulfillments)[0]?.status;
   return (
     <>
-      <fieldset>
-        <Link to={`/account/orders/${btoa(order.id)}`}>
+      <fieldset className="mb-4 rounded-lg border border-border bg-card p-4">
+        <Link
+          className="font-medium hover:underline underline-offset-4"
+          to={`/account/orders/${btoa(order.id)}`}
+        >
           <strong>#{order.number}</strong>
         </Link>
-        <p>{new Date(order.processedAt).toDateString()}</p>
+        <p className="text-sm text-muted-foreground">
+          {new Date(order.processedAt).toDateString()}
+        </p>
         {order.confirmationNumber && (
-          <p>Confirmation: {order.confirmationNumber}</p>
+          <p className="text-sm text-muted-foreground">
+            Confirmation: {order.confirmationNumber}
+          </p>
         )}
-        <p>{order.financialStatus}</p>
-        {fulfillmentStatus && <p>{fulfillmentStatus}</p>}
-        <Money data={order.totalPrice} />
-        <Link to={`/account/orders/${btoa(order.id)}`}>View Order →</Link>
+        <p className="text-sm text-muted-foreground">{order.financialStatus}</p>
+        {fulfillmentStatus && (
+          <p className="text-sm text-muted-foreground">{fulfillmentStatus}</p>
+        )}
+        <p className="mt-2 font-medium">
+          <Money data={order.totalPrice} />
+        </p>
+        <Button asChild variant="outline" size="sm" className="mt-4">
+          <Link to={`/account/orders/${btoa(order.id)}`}>View order</Link>
+        </Button>
       </fieldset>
-      <br />
     </>
   );
 }

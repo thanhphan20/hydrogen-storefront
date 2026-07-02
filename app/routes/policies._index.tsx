@@ -25,12 +25,17 @@ export default function Policies() {
   const {policies} = useLoaderData<typeof loader>();
 
   return (
-    <div className="policies">
-      <h1>Policies</h1>
-      <div>
+    <div className="policies mx-auto max-w-4xl px-6 py-12">
+      <h1 className="mb-8 text-3xl font-semibold tracking-tight">Policies</h1>
+      <div className="grid gap-3">
         {policies.map((policy) => (
-          <fieldset key={policy.id}>
-            <Link to={`/policies/${policy.handle}`}>{policy.title}</Link>
+          <fieldset
+            className="rounded-lg border border-border bg-card p-4 transition-colors hover:border-border-strong hover:bg-accent"
+            key={policy.id}
+          >
+            <Link className="font-medium" to={`/policies/${policy.handle}`}>
+              {policy.title}
+            </Link>
           </fieldset>
         ))}
       </div>

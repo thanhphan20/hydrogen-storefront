@@ -28,10 +28,10 @@ export function Header({
   const {shop, menu} = header;
   return (
     <div className="flex flex-col w-full sticky top-0 z-40">
-      <div className="bg-black text-white text-[10px] py-2 text-center uppercase tracking-[0.2em] font-bold">
+      <div className="bg-background border-b border-border text-xs text-muted-foreground py-2 text-center">
         Free shipping on orders over $150
       </div>
-      <header className="bg-white/95 backdrop-blur-md border-b border-black/5 flex flex-col pt-6 pb-2 px-6 gap-6">
+      <header className="bg-black/80 backdrop-blur-md border-b border-border flex flex-col pt-6 pb-2 px-6 gap-6">
         <div className="flex items-center justify-between">
           <div className="flex-1 hidden md:flex">
             {/* Left placeholder for symmetry or search */}
@@ -39,9 +39,8 @@ export function Header({
           <NavLink
             prefetch="intent"
             to="/"
-            style={activeLinkStyle}
             end
-            className="text-3xl font-black tracking-tighter uppercase italic"
+            className="text-xl font-semibold tracking-tight text-foreground"
           >
             {shop.name}
           </NavLink>
@@ -49,7 +48,7 @@ export function Header({
             <HeaderCtas isLoggedIn={isLoggedIn} cart={cart} />
           </div>
         </div>
-        <div className="hidden md:flex justify-center border-t border-black/[0.03] pt-4">
+        <div className="hidden md:flex justify-center border-t border-border/50 pt-4">
           <HeaderMenu
             menu={menu}
             viewport="desktop"
@@ -83,9 +82,14 @@ export function HeaderMenu({
           end
           onClick={close}
           prefetch="intent"
-          style={activeLinkStyle}
           to="/"
-          className="uppercase text-xs font-bold tracking-widest border-b border-black/5 pb-4"
+          className={({isActive}) =>
+            `text-sm transition-colors border-b border-border pb-4 ${
+              isActive
+                ? 'text-foreground'
+                : 'text-muted-foreground hover:text-foreground'
+            }`
+          }
         >
           Home
         </NavLink>
@@ -103,12 +107,17 @@ export function HeaderMenu({
 
         return (
           <NavLink
-            className="header-menu-item uppercase text-[12px] font-bold tracking-[0.15em] hover:text-black/50 transition-colors border-b-2 border-transparent hover:border-black/10"
+            className={({isActive}) =>
+              `header-menu-item text-sm transition-colors ${
+                isActive
+                  ? 'text-foreground'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`
+            }
             end
             key={item.id}
             onClick={close}
             prefetch="intent"
-            style={activeLinkStyle}
             to={url}
           >
             {item.title}
@@ -126,7 +135,17 @@ function HeaderCtas({
   return (
     <nav className="header-ctas flex items-center gap-4" role="navigation">
       <HeaderMenuMobileToggle />
-      <NavLink prefetch="intent" to="/account" style={activeLinkStyle}>
+      <NavLink
+        prefetch="intent"
+        to="/account"
+        className={({isActive}) =>
+          `text-sm transition-colors ${
+            isActive
+              ? 'text-foreground'
+              : 'text-muted-foreground hover:text-foreground'
+          }`
+        }
+      >
         <Suspense fallback={<User className="h-5 w-5" />}>
           <Await resolve={isLoggedIn}>
             {(isLoggedIn) => (
@@ -190,7 +209,7 @@ function CartBadge({count}: {count: number}) {
     >
       <ShoppingBag className="h-5 w-5" />
       {count > 0 && (
-        <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-black text-[10px] text-white">
+        <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-foreground text-[10px] font-medium text-background motion-safe:animate-in motion-safe:zoom-in motion-safe:duration-200">
           {count}
         </span>
       )}
@@ -255,16 +274,3 @@ const FALLBACK_HEADER_MENU = {
     },
   ],
 };
-
-function activeLinkStyle({
-  isActive,
-  isPending,
-}: {
-  isActive: boolean;
-  isPending: boolean;
-}) {
-  return {
-    fontWeight: isActive ? 'bold' : undefined,
-    color: isPending ? 'grey' : undefined,
-  };
-}

@@ -9,6 +9,7 @@ import {
   Scripts,
   ScrollRestoration,
   useRouteLoaderData,
+  Link,
 } from 'react-router';
 import type {Route} from './+types/root';
 import favicon from '~/assets/favicon.svg';
@@ -151,6 +152,7 @@ export function Layout({children}: {children?: React.ReactNode}) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <meta name="theme-color" content="#000000" />
         <link rel="stylesheet" href={tailwindCss}></link>
         <link rel="stylesheet" href={resetStyles}></link>
         <link rel="stylesheet" href={appStyles}></link>
@@ -200,14 +202,24 @@ export function ErrorBoundary() {
   }
 
   return (
-    <div className="route-error">
-      <h1>Oops</h1>
-      <h2>{errorStatus}</h2>
+    <div className="route-error flex min-h-screen flex-col items-center justify-center bg-background px-6 py-16 text-center text-foreground">
+      <p className="text-sm text-muted-foreground">{errorStatus}</p>
+      <h1 className="mt-2 text-3xl font-semibold tracking-tight">
+        Page unavailable
+      </h1>
       {errorMessage && (
-        <fieldset>
-          <pre>{errorMessage}</pre>
+        <fieldset className="mt-6 max-w-xl rounded-lg border border-border bg-card p-4 text-left">
+          <pre className="whitespace-pre-wrap text-sm text-muted-foreground">
+            {errorMessage}
+          </pre>
         </fieldset>
       )}
+      <Link
+        className="mt-8 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/85"
+        to="/"
+      >
+        Return home
+      </Link>
     </div>
   );
 }

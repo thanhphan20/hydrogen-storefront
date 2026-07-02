@@ -51,8 +51,14 @@ export default function Collection() {
   const {products} = useLoaderData<typeof loader>();
 
   return (
-    <div className="collection">
-      <h1>Products</h1>
+    <div className="collection max-w-7xl mx-auto px-6 py-12">
+      <h1 className="text-3xl font-semibold tracking-tight">All products</h1>
+      <div className="mt-8 mb-8 flex items-center justify-between border-y border-border py-3">
+        <span className="text-sm text-muted-foreground">
+          {products.nodes.length}{' '}
+          {products.nodes.length === 1 ? 'product' : 'products'}
+        </span>
+      </div>
       <PaginatedResourceSection<CollectionItemFragment>
         connection={products}
         resourcesClassName="products-grid"

@@ -63,7 +63,7 @@ export function PageLayout({
 
 function CartAside({cart}: {cart: PageLayoutProps['cart']}) {
   return (
-    <Aside type="cart" heading="CART">
+    <Aside type="cart" heading="Cart">
       <Suspense fallback={<p className="p-4">Loading cart ...</p>}>
         <Await resolve={cart}>
           {(cart) => {
@@ -78,7 +78,7 @@ function CartAside({cart}: {cart: PageLayoutProps['cart']}) {
 function SearchAside() {
   const queriesDatalistId = useId();
   return (
-    <Aside type="search" heading="SEARCH">
+    <Aside type="search" heading="Search">
       <div className="predictive-search">
         <div className="p-6 pb-0">
           <SearchFormPredictive>
@@ -112,8 +112,8 @@ function SearchAside() {
               if (state === 'loading' && term.current) {
                 return (
                   <div className="flex flex-col items-center justify-center py-20">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black mb-4"></div>
-                    <p className="text-sm text-gray-500">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-foreground mb-4"></div>
+                    <p className="text-sm text-muted-foreground">
                       Searching for products...
                     </p>
                   </div>
@@ -154,13 +154,13 @@ function SearchAside() {
                     <Link
                       onClick={closeSearch}
                       to={`${SEARCH_ENDPOINT}?q=${term.current}`}
-                      className="flex items-center justify-center gap-2 p-4 bg-gray-50 rounded-2xl font-bold hover:bg-black hover:text-white transition-all group"
+                      className="flex items-center justify-center gap-2 rounded-lg border border-border bg-secondary p-4 text-sm font-medium transition-colors hover:bg-accent group"
                     >
                       <span>
                         View all {total} results for{' '}
-                        <q className="italic">{term.current}</q>
+                        <q>{term.current}</q>
                       </span>
-                      <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                      <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
                     </Link>
                   ) : null}
                 </div>
@@ -183,7 +183,7 @@ function MobileMenuAside({
   return (
     header.menu &&
     header.shop.primaryDomain?.url && (
-      <Aside type="mobile" heading="MENU">
+      <Aside type="mobile" heading="Menu">
         <div className="p-4">
           <HeaderMenu
             menu={header.menu}

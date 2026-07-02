@@ -17,6 +17,8 @@ import {
   DELETE_ADDRESS_MUTATION,
   CREATE_ADDRESS_MUTATION,
 } from '~/graphql/customer-account/CustomerAddressMutations';
+import {Button} from '~/components/ui/button';
+import {Input} from '~/components/ui/input';
 
 export type ActionResponse = {
   addressId?: string | null;
@@ -262,18 +264,19 @@ export default function Addresses() {
 
   return (
     <div className="account-addresses">
-      <h2>Addresses</h2>
-      <br />
+      <h2 className="mb-6 text-2xl font-semibold tracking-tight">Addresses</h2>
       <div>
-        <div>
-          <legend>Create address</legend>
+        <div className="rounded-lg border border-border bg-card p-4">
+          <legend className="mb-4 text-sm font-medium text-muted-foreground">
+            Create address
+          </legend>
           <NewAddressForm key={addresses.nodes.length} />
         </div>
-        <br />
-        <hr />
-        <br />
+        <hr className="my-8 border-border" />
         {!addresses.nodes.length ? (
-          <p>You have no addresses saved.</p>
+          <p className="rounded-lg border border-border bg-card p-6 text-sm text-muted-foreground">
+            You have no addresses saved.
+          </p>
         ) : (
           <ExistingAddresses
             addresses={addresses}
@@ -308,13 +311,13 @@ function NewAddressForm() {
     >
       {({stateForMethod}) => (
         <div>
-          <button
+          <Button
             disabled={stateForMethod('POST') !== 'idle'}
             formMethod="POST"
             type="submit"
           >
             {stateForMethod('POST') !== 'idle' ? 'Creating' : 'Create'}
-          </button>
+          </Button>
         </div>
       )}
     </AddressForm>
@@ -327,7 +330,9 @@ function ExistingAddresses({
 }: Pick<CustomerFragment, 'addresses' | 'defaultAddress'>) {
   return (
     <div>
-      <legend>Existing addresses</legend>
+      <legend className="mb-4 text-sm font-medium text-muted-foreground">
+        Existing addresses
+      </legend>
       {addresses.nodes.map((address) => (
         <AddressForm
           key={address.id}
@@ -336,21 +341,22 @@ function ExistingAddresses({
           defaultAddress={defaultAddress}
         >
           {({stateForMethod}) => (
-            <div>
-              <button
+            <div className="flex flex-wrap gap-2">
+              <Button
                 disabled={stateForMethod('PUT') !== 'idle'}
                 formMethod="PUT"
                 type="submit"
               >
                 {stateForMethod('PUT') !== 'idle' ? 'Saving' : 'Save'}
-              </button>
-              <button
+              </Button>
+              <Button
                 disabled={stateForMethod('DELETE') !== 'idle'}
                 formMethod="DELETE"
+                variant="outline"
                 type="submit"
               >
                 {stateForMethod('DELETE') !== 'idle' ? 'Deleting' : 'Delete'}
-              </button>
+              </Button>
             </div>
           )}
         </AddressForm>
@@ -377,11 +383,11 @@ export function AddressForm({
   const error = action?.error?.[addressId];
   const isDefaultAddress = defaultAddress?.id === addressId;
   return (
-    <Form id={addressId}>
-      <fieldset>
+    <Form id={addressId} className="mb-6">
+      <fieldset className="space-y-3 rounded-lg border border-border bg-card p-4">
         <input type="hidden" name="addressId" defaultValue={addressId} />
-        <label htmlFor="firstName">First name*</label>
-        <input
+        <label className="block text-sm font-medium" htmlFor="firstName">First name*</label>
+        <Input
           aria-label="First name"
           autoComplete="given-name"
           defaultValue={address?.firstName ?? ''}
@@ -391,8 +397,8 @@ export function AddressForm({
           required
           type="text"
         />
-        <label htmlFor="lastName">Last name*</label>
-        <input
+        <label className="block text-sm font-medium" htmlFor="lastName">Last name*</label>
+        <Input
           aria-label="Last name"
           autoComplete="family-name"
           defaultValue={address?.lastName ?? ''}
@@ -402,8 +408,8 @@ export function AddressForm({
           required
           type="text"
         />
-        <label htmlFor="company">Company</label>
-        <input
+        <label className="block text-sm font-medium" htmlFor="company">Company</label>
+        <Input
           aria-label="Company"
           autoComplete="organization"
           defaultValue={address?.company ?? ''}
@@ -412,8 +418,8 @@ export function AddressForm({
           placeholder="Company"
           type="text"
         />
-        <label htmlFor="address1">Address line*</label>
-        <input
+        <label className="block text-sm font-medium" htmlFor="address1">Address line*</label>
+        <Input
           aria-label="Address line 1"
           autoComplete="address-line1"
           defaultValue={address?.address1 ?? ''}
@@ -423,8 +429,8 @@ export function AddressForm({
           required
           type="text"
         />
-        <label htmlFor="address2">Address line 2</label>
-        <input
+        <label className="block text-sm font-medium" htmlFor="address2">Address line 2</label>
+        <Input
           aria-label="Address line 2"
           autoComplete="address-line2"
           defaultValue={address?.address2 ?? ''}
@@ -433,8 +439,8 @@ export function AddressForm({
           placeholder="Address line 2"
           type="text"
         />
-        <label htmlFor="city">City*</label>
-        <input
+        <label className="block text-sm font-medium" htmlFor="city">City*</label>
+        <Input
           aria-label="City"
           autoComplete="address-level2"
           defaultValue={address?.city ?? ''}
@@ -444,8 +450,8 @@ export function AddressForm({
           required
           type="text"
         />
-        <label htmlFor="zoneCode">State / Province*</label>
-        <input
+        <label className="block text-sm font-medium" htmlFor="zoneCode">State / Province*</label>
+        <Input
           aria-label="State/Province"
           autoComplete="address-level1"
           defaultValue={address?.zoneCode ?? ''}
@@ -455,8 +461,8 @@ export function AddressForm({
           required
           type="text"
         />
-        <label htmlFor="zip">Zip / Postal Code*</label>
-        <input
+        <label className="block text-sm font-medium" htmlFor="zip">Zip / Postal Code*</label>
+        <Input
           aria-label="Zip"
           autoComplete="postal-code"
           defaultValue={address?.zip ?? ''}
@@ -466,8 +472,8 @@ export function AddressForm({
           required
           type="text"
         />
-        <label htmlFor="territoryCode">Country Code*</label>
-        <input
+        <label className="block text-sm font-medium" htmlFor="territoryCode">Country code*</label>
+        <Input
           aria-label="Country code"
           autoComplete="country"
           defaultValue={address?.territoryCode ?? ''}
@@ -478,8 +484,8 @@ export function AddressForm({
           type="text"
           maxLength={2}
         />
-        <label htmlFor="phoneNumber">Phone</label>
-        <input
+        <label className="block text-sm font-medium" htmlFor="phoneNumber">Phone</label>
+        <Input
           aria-label="Phone Number"
           autoComplete="tel"
           defaultValue={address?.phoneNumber ?? ''}
@@ -489,23 +495,22 @@ export function AddressForm({
           pattern="^\+?[1-9]\d{3,14}$"
           type="tel"
         />
-        <div>
+        <div className="flex items-center gap-2 py-2">
           <input
             defaultChecked={isDefaultAddress}
             id="defaultAddress"
             name="defaultAddress"
+            className="h-4 w-4 rounded border-border bg-card accent-white"
             type="checkbox"
           />
-          <label htmlFor="defaultAddress">Set as default address</label>
+          <label className="text-sm text-muted-foreground" htmlFor="defaultAddress">Set as default address</label>
         </div>
         {error ? (
-          <p>
-            <mark>
-              <small>{error}</small>
-            </mark>
+          <p className="rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
+            {error}
           </p>
         ) : (
-          <br />
+          null
         )}
         {children({
           stateForMethod: (method) => (formMethod === method ? state : 'idle'),

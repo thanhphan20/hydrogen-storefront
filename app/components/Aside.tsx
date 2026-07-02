@@ -46,8 +46,8 @@ export function Aside({
         side={type === 'search' ? 'top' : 'right'}
         className="flex flex-col p-0 w-full sm:max-w-[450px] h-full"
       >
-        <SheetHeader className="px-6 py-6 border-b border-black/5 flex-shrink-0">
-          <SheetTitle className="text-[12px] font-black uppercase tracking-[0.2em]">
+        <SheetHeader className="px-6 py-6 border-b border-border flex-shrink-0">
+          <SheetTitle className="text-base font-medium tracking-tight">
             {heading}
           </SheetTitle>
         </SheetHeader>

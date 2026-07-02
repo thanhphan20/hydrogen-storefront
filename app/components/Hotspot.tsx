@@ -36,9 +36,9 @@ export function HotSpot({banner, hotspots}: HotspotProps) {
           sizes="(min-width: 45em) 50vw, 50vw"
           className="h-screen w-full object-cover"
         />
-        <div className="absolute top-0 left-0 p-4 text-white">
-          <h1 className="text-3xl font-bold text-black">{banner.title}</h1>
-          <p className="text-lg text-black">{banner.byline}</p>
+        <div className="absolute top-0 left-0 p-4 text-foreground">
+          <h1 className="text-3xl font-semibold tracking-tight">{banner.title}</h1>
+          <p className="text-lg text-muted-foreground">{banner.byline}</p>
         </div>
       </div>
       <div className="hotspots">
@@ -55,10 +55,10 @@ export function HotSpot({banner, hotspots}: HotspotProps) {
               <PopoverTrigger asChild>
                 <button
                   type="button"
-                  className="h-4 w-4 rounded-full bg-red-500 transition hover:scale-110"
+                  className="h-4 w-4 rounded-full border border-background bg-foreground transition hover:scale-110"
                 />
               </PopoverTrigger>
-              <PopoverContent className="w-64 bg-white p-4 shadow-lg">
+              <PopoverContent className="w-64 p-4">
                 <div className="flex items-start gap-4">
                   <img
                     src={hotspot.imageUrl}
@@ -66,8 +66,8 @@ export function HotSpot({banner, hotspots}: HotspotProps) {
                     className="h-16 w-16 object-cover"
                   />
                   <div>
-                    <h2 className="text-lg font-bold">{hotspot.title}</h2>
-                    <p className="text-sm text-gray-500">{hotspot.price}</p>
+                    <h2 className="text-lg font-semibold">{hotspot.title}</h2>
+                    <p className="text-sm text-muted-foreground">{hotspot.price}</p>
                   </div>
                 </div>
               </PopoverContent>
