@@ -1,6 +1,6 @@
 # Hydrogen Headless Storefront
 
-A high-performance, modern headless Shopify storefront built with **React Router 7**, **Hydrogen**, and **Tailwind CSS v4**.
+A high-performance, modern headless Shopify storefront built with **React Router 7**, **Hydrogen**, **Tailwind CSS v4**, and **Stripe Embedded Checkout**.
 
 This template is a production-ready "Skeleton" designed to be the ultimate starting point for bespoke Shopify storefronts. It prioritizes **Sub-second performance**, **Developer experience**, and **Accessibility** out of the box. Unlike traditional setups, it moves away from legacy Remix patterns in favor of the unified React Router 7 architecture, providing a more streamlined and powerful foundation for headless commerce.
 
