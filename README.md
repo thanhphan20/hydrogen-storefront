@@ -35,6 +35,47 @@ This template is a production-ready "Skeleton" designed to be the ultimate start
 └── package.json          # Project dependencies and scripts
 ```
 
+## Architecture
+
+This storefront is a **React Router 7 (Remix-style)** SSR application running inside Shopify's **Hydrogen** framework. A single fetch handler (`server.ts`) builds a per-request context — cart, cookie session, and cache — and hands it to React Router, which resolves file-based routes in `app/routes/`. Route loaders/actions talk to Shopify's **Storefront API** for catalog/cart data, the **Customer Account API** for auth, and a custom **Stripe Embedded Checkout** flow for payment. GraphQL responses are optionally cached in **Upstash Redis** when running on Vercel (in place of the Workers `caches` API used on Oxygen).
+
+```mermaid
+flowchart TD
+    Browser["Browser<br/>(hydrated React Router 7 app)"]
+    EntryClient["entry.client.tsx"]
+    Server["server.ts<br/>(Oxygen / Vercel fetch handler)"]
+    Context["createHydrogenRouterContext<br/>(app/lib/context.ts)"]
+    SessionLib["AppSession<br/>(cookie session, app/lib/session.ts)"]
+    CacheLib["Cache: Workers caches API<br/>or Upstash Redis (app/lib/redis-cache.ts)"]
+    Routes["File-based routes<br/>(app/routes/*, root.tsx)"]
+    CheckoutServer["checkout.server.ts"]
+    Storefront["Shopify Storefront API<br/>(GraphQL)"]
+    CustomerAPI["Shopify Customer Account API"]
+    StripeAPI["Stripe API<br/>(Embedded Checkout)"]
+    AnalyticsProviders["Shopify Analytics +<br/>Vercel Analytics"]
+
+    Browser -->|"HTTP request"| Server
+    Server --> Context
+    Context --> SessionLib
+    Context --> CacheLib
+    Context --> Routes
+    Routes -->|"storefront.query/mutate"| Storefront
+    Routes -->|"customerAccount.query"| CustomerAPI
+    Routes -->|"/checkout action"| CheckoutServer
+    CheckoutServer -->|"create Checkout Session"| StripeAPI
+    CacheLib -.->|"caches GraphQL responses"| Storefront
+    StripeAPI -->|"clientSecret"| Routes
+    Routes -->|"SSR HTML + data"| EntryClient
+    EntryClient -->|"hydrate"| Browser
+    Routes --> AnalyticsProviders
+```
+
+**Key flows:**
+- **Browsing/PDP/collections**: `Browser → server.ts → Routes → Storefront API (GraphQL)`, rendered server-side and streamed back, then hydrated client-side.
+- **Auth**: `account.*` routes call the Customer Account API via `context.customerAccount`, backed by the OAuth-derived session stored via `AppSession`.
+- **Checkout**: adding to cart uses the Storefront Cart API; the `/checkout` route then calls `checkout.server.ts`, which creates a Stripe Embedded Checkout session and returns a `clientSecret` rendered by `StripeEmbeddedCheckout`. Payment status is confirmed via `/checkout/return` and `/checkout/success`.
+- **Caching**: on Oxygen, Hydrogen uses the native Workers `caches` API; on Vercel, `app/lib/redis-cache.ts` swaps in an Upstash Redis-backed implementation of the same `Cache` interface so sub-request caching still works at the edge.
+
 ## Quick Start
 
 Get your development environment up and running in less than 5 minutes.
